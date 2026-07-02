@@ -37,7 +37,7 @@ function khb_footer() {
     echo '<div class="foot-cols">';
     echo '<div><span class="brand"><span class="brand-kaos">KAOS</span> HOT BEATZ</span>';
     echo '<p class="muted">' . h(ARTIST_TAGLINE) . '<br>' . h(ARTIST_GENRES) . '</p>';
-    echo '<p style="margin-top:10px;line-height:2"><a href="' . h(BEATSTARS_URL) . '" target="_blank" rel="noopener">BeatStars ↗</a> &nbsp; <a href="' . h(SOUNDCLOUD_URL) . '" target="_blank" rel="noopener">SoundCloud ↗</a> &nbsp; <a href="' . h(YOUTUBE_URL) . '" target="_blank" rel="noopener">YouTube ↗</a> &nbsp; <a href="' . h(INSTAGRAM_URL) . '" target="_blank" rel="noopener">Instagram ↗</a> &nbsp; <a href="' . h(SUNO_URL) . '" target="_blank" rel="noopener">Suno ↗</a></p></div>';
+    echo '<p style="margin-top:10px;line-height:2"><a href="' . h(BEATSTARS_URL) . '" target="_blank" rel="noopener">BeatStars ↗</a> &nbsp; <a href="' . h(SOUNDCLOUD_URL) . '" target="_blank" rel="noopener">SoundCloud ↗</a> &nbsp; <a href="' . h(YOUTUBE_URL) . '" target="_blank" rel="noopener">YouTube ↗</a> &nbsp; <a href="' . h(INSTAGRAM_URL) . '" target="_blank" rel="noopener">Instagram ↗</a></p></div>';
     echo '<div><h4>Shop</h4><a href="/beats.php">Beats</a><a href="/cart.php">Cart</a><a href="/member/account.php">My Purchases</a></div>';
     echo '<div><h4>Studio</h4><a href="/book.php">Book a Session</a><a href="/about.php">The Collection</a><a href="/contact.php">Contact</a></div>';
     echo '<div><h4>Account</h4><a href="/member/login.php">Sign In</a><a href="/member/register.php">Create Account</a><a href="/licensing.php">Licensing</a></div>';

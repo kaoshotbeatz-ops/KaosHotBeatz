@@ -33,7 +33,6 @@ khb_header('Original Beats & Studio Sessions', '');
         <a class="soc" href="<?= h(SOUNDCLOUD_URL) ?>" target="_blank" rel="noopener">☁ SoundCloud</a>
         <a class="soc" href="<?= h(YOUTUBE_URL) ?>" target="_blank" rel="noopener">▶ YouTube</a>
         <a class="soc" href="<?= h(INSTAGRAM_URL) ?>" target="_blank" rel="noopener">📸 Instagram</a>
-        <a class="soc" href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">Suno</a>
         <span class="wave" aria-hidden="true"><?php for($i=0;$i<14;$i++) echo '<i></i>'; ?></span>
       </div>
     </div>

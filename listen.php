@@ -1,43 +1,35 @@
 <?php
 require_once __DIR__ . '/partials.php';
-$music = suno_tracks();
-$playlists = suno_playlists();
+$beats = array_filter(khb_load('beats'), fn($b) => empty($b['sold_exclusive']));
+usort($beats, fn($a, $b) => ($b['ts'] ?? 0) <=> ($a['ts'] ?? 0));
 khb_header('Listen', 'listen.php');
 ?>
-<section class="hero" style="padding-bottom:36px">
+<section class="hero brick" style="padding-bottom:34px">
   <div class="wrap">
     <p class="kicker"><?= h(ARTIST_GENRES) ?></p>
     <h1>The Catalog</h1>
-    <p class="lead"><?= h(STAT_SONGS) ?> records · <?= h(STAT_PLAYS) ?> plays. Soul-sampled boom bap from Long Island.</p>
-    <a class="suno-cta" href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">🎵 Follow on Suno ↗</a>
+    <p class="lead"><?= count($beats) ?> beats, hand-played on the MPC. Hit play — everything streams right here.</p>
   </div>
 </section>
 <section>
   <div class="wrap">
-    <div class="section-head"><div><p class="ey">Playlists</p><h2>Curated on Suno</h2></div></div>
-    <div class="grid c3" style="margin-bottom:44px">
-      <?php foreach ($playlists as $p): ?>
-      <a class="card" href="https://suno.com/playlist/<?= h($p['id']) ?>" target="_blank" rel="noopener" style="display:block">
-        <h3 style="margin:0">▶ <?= h($p['name']) ?></h3>
-        <p class="muted" style="margin:.3em 0 0"><?= (int)$p['count'] ?> tracks · Suno ↗</p>
-      </a>
+    <?php if (!$beats): ?>
+      <div class="card"><p class="muted">No beats posted yet. <a href="/admin/">Add some in the admin panel</a>.</p></div>
+    <?php else: ?>
+    <div class="beat-list">
+      <?php foreach ($beats as $b): $preview = $b['preview'] ? '/assets/beats/' . h($b['preview']) : ''; ?>
+      <div class="beat">
+        <?php if ($preview): ?><button class="play" data-src="<?= $preview ?>" data-title="<?= h($b['title']) ?>">▶</button><?php else: ?><span class="play" style="opacity:.3">♪</span><?php endif; ?>
+        <div class="meta"><div class="t"><a href="/beat.php?id=<?= h($b['id']) ?>" style="color:var(--ink)"><?= h($b['title']) ?></a></div>
+          <div class="s"><?= h($b['genre'] ?? '') ?><?= !empty($b['bpm']) ? ' · ' . h($b['bpm']) . ' BPM' : '' ?></div></div>
+        <div class="tags"><?php foreach (array_slice(explode(',', $b['moods'] ?? ''),0,3) as $t){ $t=trim($t); if($t) echo '<span class="tag">'.h($t).'</span>'; } ?></div>
+        <a class="btn sm" href="/beat.php?id=<?= h($b['id']) ?>">Get Beat</a>
+      </div>
       <?php endforeach; ?>
     </div>
-    <div class="section-head"><div><p class="ey">Tracks</p><h2>Featured records</h2></div></div>
-    <?php if (!$music): ?>
-      <div class="card"><p class="muted">Tracks land here once added in the admin panel (Music tab). For now, stream everything on <a href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">Suno ↗</a>.</p></div>
-    <?php else: ?>
-      <div class="suno-grid">
-        <?php foreach ($music as $m): $sid = suno_id($m['suno']); ?>
-          <div class="suno-embed">
-            <?php if (!empty($m['title'])): ?><p style="font-weight:700;margin:0 0 8px"><?= h($m['title']) ?><?= !empty($m['tags']) ? ' <span class="tag">'.h($m['tags']).'</span>' : '' ?></p><?php endif; ?>
-            <iframe src="https://suno.com/embed/<?= h($sid) ?>" loading="lazy" allow="autoplay" title="<?= h($m['title'] ?? 'Track') ?>"></iframe>
-          </div>
-        <?php endforeach; ?>
-      </div>
     <?php endif; ?>
     <div style="text-align:center;margin-top:40px">
-      <a class="btn" href="/beats.php">Shop the beats these came from →</a>
+      <a class="btn" href="/beats.php">Browse the full store →</a>
     </div>
   </div>
 </section>
