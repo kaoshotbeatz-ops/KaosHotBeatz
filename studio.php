@@ -49,7 +49,7 @@ $MELODY = [
 
     <div class="machine xl-skin">
       <div id="unlock"><div class="p">▶</div><div class="t" id="unlockTxt">Tap to load the kit</div></div>
-      <audio id="silentUnlock" loop playsinline style="display:none" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
+      <audio id="silentUnlock" playsinline style="display:none" src="/assets/drums/pad3.wav" preload="auto"></audio>
       <div class="xl-lcd">
         <div class="xl-lcd-scan"></div>
         <div class="xl-lcd-row1">
@@ -65,6 +65,7 @@ $MELODY = [
         <button class="btn ghost sm" id="stop">■ STOP</button>
         <button class="btn ghost sm" id="clear">CLEAR</button>
         <span class="bpm">BPM <input type="range" id="bpm" min="60" max="150" value="90"><b id="bpmv" class="mono">90</b></span>
+        <button class="btn ghost sm" id="tapTempo">TAP</button>
         <span class="live" id="status">load the kit ↑</span>
       </div>
       <div class="bank-row">
@@ -190,7 +191,7 @@ function unlock(){
   // 2) play a real <audio> element — this switches iOS's audio session to "playback" category,
   //    which makes sound audible even if the phone's silent/mute switch is flipped on.
   //    (Web Audio alone respects the mute switch on iPhone; a played <audio> tag does not.)
-  if(silentEl){ silentEl.volume=0.01; var p=silentEl.play(); if(p&&p.catch) p.catch(function(){}); }
+  if(silentEl){ silentEl.volume=0.05; silentEl.currentTime=0; var p=silentEl.play(); if(p&&p.catch) p.catch(function(){}); setTimeout(function(){ try{ silentEl.pause(); }catch(e){} },250); }
   unlockEl.classList.add('hide');
   if(!ready) setStatus('loading kit…'); else setStatus('kit loaded — bang it');
 }
@@ -256,6 +257,24 @@ document.getElementById('stop').addEventListener('click',function(){ stopPlay();
 document.getElementById('clear').addEventListener('click',function(){ stopPlay(); events=[]; recording=false; document.getElementById('rec').classList.remove('on'); setStatus('cleared'); });
 document.getElementById('bpm').addEventListener('input',function(){ bpm=+this.value; document.getElementById('bpmv').textContent=bpm; var lb=document.getElementById('lcdBpm'); if(lb) lb.textContent=(bpm<100?'0':'')+bpm; });
 document.getElementById('lcdBpm').textContent='090';
+
+// ---- tap tempo ----
+var tapTimes=[];
+function applyBpm(v){ bpm=v; document.getElementById('bpm').value=v; document.getElementById('bpmv').textContent=v; var lb=document.getElementById('lcdBpm'); if(lb) lb.textContent=(v<100?'0':'')+v; }
+function doTap(){
+  var now=performance.now();
+  if(tapTimes.length && now-tapTimes[tapTimes.length-1]>2200) tapTimes=[];
+  tapTimes.push(now); if(tapTimes.length>8) tapTimes.shift();
+  if(tapTimes.length>=2){
+    var iv=[]; for(var i=1;i<tapTimes.length;i++) iv.push(tapTimes[i]-tapTimes[i-1]);
+    var avg=iv.reduce(function(a,b){return a+b;},0)/iv.length;
+    var v=Math.round(60000/avg); v=Math.max(60,Math.min(150,v));
+    applyBpm(v); setStatus('tap tempo — '+v+' bpm');
+  } else { setStatus('tap again to set tempo…'); }
+}
+var tapBtn=document.getElementById('tapTempo');
+tapBtn.addEventListener('click',function(e){ e.preventDefault(); doTap(); });
+tapBtn.addEventListener('touchstart',function(e){ e.preventDefault(); doTap(); },{passive:false});
 
 // ---- mixer faders ----
 function bindFader(id,getNode){ var el=document.getElementById(id); if(!el) return; el.addEventListener('input',function(){ ctx(); var n=getNode(); if(n) n.gain.value=+this.value; }); }
