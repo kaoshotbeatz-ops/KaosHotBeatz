@@ -2,10 +2,12 @@
 require_once __DIR__ . '/partials.php';
 $beats = array_filter(khb_load('beats'), fn($b) => empty($b['sold_exclusive']));
 $q = trim($_GET['q'] ?? ''); $genre = trim($_GET['genre'] ?? '');
+$stemsOnly = !empty($_GET['stems']);
 $genres = [];
 foreach ($beats as $b) if (!empty($b['genre'])) $genres[$b['genre']] = true;
 if ($q) $beats = array_filter($beats, fn($b) => stripos($b['title'].' '.($b['moods']??'').' '.($b['genre']??''), $q) !== false);
 if ($genre) $beats = array_filter($beats, fn($b) => ($b['genre'] ?? '') === $genre);
+if ($stemsOnly) $beats = array_filter($beats, fn($b) => is_dir(__DIR__ . '/assets/stems/' . basename($b['id'])));
 usort($beats, fn($a, $b) => ($b['ts'] ?? 0) <=> ($a['ts'] ?? 0));
 $tiers = license_tiers();
 khb_header('Beats', 'beats.php');
@@ -22,6 +24,9 @@ khb_header('Beats', 'beats.php');
       <select name="genre" style="max-width:200px"><option value="">All genres</option>
         <?php foreach (array_keys($genres) as $g) echo '<option'.($g===$genre?' selected':'').'>'.h($g).'</option>'; ?>
       </select>
+      <label style="display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:.88rem">
+        <input type="checkbox" name="stems" value="1" <?= $stemsOnly ? 'checked' : '' ?> style="width:auto"> 🎚️ Stems available only
+      </label>
       <button class="btn">Filter</button>
     </form>
     <?php if (!$beats): ?>
@@ -34,6 +39,9 @@ khb_header('Beats', 'beats.php');
         <div class="meta"><div class="t"><a href="/beat.php?id=<?= h($b['id']) ?>" style="color:var(--ink)"><?= h($b['title']) ?></a></div>
           <div class="s"><?= h($b['bpm']) ?> BPM · <?= h($b['key'] ?? '—') ?><?= !empty($b['genre']) ? ' · '.h($b['genre']) : '' ?></div></div>
         <div class="tags"><?php foreach (array_slice(explode(',', $b['moods'] ?? ''),0,3) as $t){ $t=trim($t); if($t) echo '<span class="tag">'.h($t).'</span>'; } ?></div>
+        <?php if (is_dir(__DIR__ . '/assets/stems/' . basename($b['id']))): ?>
+        <a class="btn sm" href="/stems.php?id=<?= h($b['id']) ?>" style="background:var(--amber);color:#000">🎚️ Stems</a>
+        <?php endif; ?>
         <a class="btn sm" href="/beat.php?id=<?= h($b['id']) ?>">Get Beat</a>
       </div>
       <?php endforeach; ?>
