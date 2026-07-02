@@ -94,8 +94,10 @@ unlockEl.addEventListener('click',unlock);
 unlockEl.addEventListener('touchstart',function(e){ e.preventDefault(); unlock(); },{passive:false});
 
 // ---- record / loop ----
-var bpm=90, recording=false, events=[], recStart=0, playing=false, loopTimers=[], progRAF=null;
-function loopDur(){ return (60/bpm)*8; }
+var bpm=90, recording=false, events=[], recStart=0, playing=false, loopTimers=[], progRAF=null, counting=false;
+var BARS=4, BEATS_PER_BAR=4, COUNTIN_BARS=2;
+function beatDur(){ return 60/bpm; }
+function loopDur(){ return beatDur()*BEATS_PER_BAR*BARS; }
 function hit(i){ var now=ctx().currentTime; trigger(i,now); if(recording){ events.push({i:i,t:(now-recStart)%loopDur()}); } }
 padEls.forEach(function(el){ var i=+el.getAttribute('data-i');
   el.addEventListener('mousedown',function(e){ e.preventDefault(); hit(i); });
@@ -104,15 +106,36 @@ padEls.forEach(function(el){ var i=+el.getAttribute('data-i');
 var KEYS={'1':0,'2':1,'3':2,'4':3,'q':4,'w':5,'e':6,'r':7,'a':8,'s':9,'d':10,'f':11,'z':12,'x':13,'c':14,'v':15};
 document.addEventListener('keydown',function(e){ if(e.repeat) return; var k=e.key.toLowerCase(); if(k in KEYS){ if(unlockEl.classList.contains('hide')) hit(KEYS[k]); }});
 
+// ---- metronome click (synth — no sample needed) ----
+function metroClick(t,accent){ var c=ctx(),o=c.createOscillator(),g=c.createGain(); o.type='square'; o.frequency.value=accent?1600:1100; g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.05); o.connect(g).connect(master); o.start(t); o.stop(t+0.06); }
+function countIn(cb){
+  counting=true; var bd=beatDur(), totalBeats=BEATS_PER_BAR*COUNTIN_BARS, base=ctx().currentTime;
+  for(var b=0;b<totalBeats;b++){ (function(b){ loopTimers.push(setTimeout(function(){
+    metroClick(ctx().currentTime, b%BEATS_PER_BAR===0);
+    setStatus('count-in… '+(Math.floor(b/BEATS_PER_BAR)+1)+' : '+(b%BEATS_PER_BAR+1));
+  }, b*bd*1000)); })(b); }
+  loopTimers.push(setTimeout(function(){ counting=false; cb(); }, totalBeats*bd*1000));
+}
+
 var start0=0;
 function startPlay(){ if(playing) return; playing=true; var start=ctx().currentTime; start0=start; var d=loopDur();
   function schedule(){ events.forEach(function(ev){ loopTimers.push(setTimeout(function(){ trigger(ev.i); }, ev.t*1000)); }); loopTimers.push(setTimeout(schedule, d*1000)); }
   if(!recording) recStart=start; schedule();
   function tick(){ if(!playing) return; var el=((ctx().currentTime-start0)%d)/d; document.getElementById('prog').style.width=(el*100)+'%'; progRAF=requestAnimationFrame(tick); } tick();
 }
-function stopPlay(){ playing=false; loopTimers.forEach(clearTimeout); loopTimers=[]; if(progRAF) cancelAnimationFrame(progRAF); document.getElementById('prog').style.width='0'; }
-document.getElementById('rec').addEventListener('click',function(){ recording=!recording; this.classList.toggle('on',recording); if(recording){ if(!playing) events=[]; recStart=ctx().currentTime; setStatus('recording — drum it!'); startPlay(); } else setStatus('recorded '+events.length+' hits'); });
-document.getElementById('play').addEventListener('click',function(){ if(!events.length){ setStatus('record something first'); return;} stopPlay(); startPlay(); setStatus('looping your beat'); });
+function stopPlay(){ playing=false; counting=false; loopTimers.forEach(clearTimeout); loopTimers=[]; if(progRAF) cancelAnimationFrame(progRAF); document.getElementById('prog').style.width='0'; }
+document.getElementById('rec').addEventListener('click',function(){
+  if(counting) return;
+  if(recording){ recording=false; this.classList.remove('on'); setStatus('recorded '+events.length+' hits'); return; }
+  this.classList.add('on');
+  if(!playing) events=[];
+  countIn(function(){ recording=true; recStart=ctx().currentTime; setStatus('recording — 4 bars, drum it!'); startPlay(); });
+});
+document.getElementById('play').addEventListener('click',function(){
+  if(counting) return;
+  if(!events.length){ setStatus('record something first'); return;}
+  stopPlay(); countIn(function(){ startPlay(); setStatus('looping your 4-bar beat'); });
+});
 document.getElementById('stop').addEventListener('click',function(){ stopPlay(); recording=false; document.getElementById('rec').classList.remove('on'); setStatus('stopped'); });
 document.getElementById('clear').addEventListener('click',function(){ stopPlay(); events=[]; recording=false; document.getElementById('rec').classList.remove('on'); setStatus('cleared'); });
 document.getElementById('bpm').addEventListener('input',function(){ bpm=+this.value; document.getElementById('bpmv').textContent=bpm; });
