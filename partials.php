@@ -16,7 +16,8 @@ function khb_header($title, $active = '') {
     echo '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<title>' . h($title) . ' — ' . SITE_NAME . '</title>';
     echo '<meta name="description" content="KAOS Hot Beatz — original MPC-crafted instrumentals, studio sessions, and exclusive beats by an MPC and Yamaha collector.">';
-    echo '<link rel="stylesheet" href="/assets/style.css">';
+    $cssv = @filemtime(__DIR__ . '/assets/style.css') ?: time();
+    echo '<link rel="stylesheet" href="/assets/style.css?v=' . $cssv . '">';
     echo '</head><body>';
     echo '<header class="site-head"><div class="wrap">';
     echo '<a class="brand" href="/"><span class="brand-kaos">KAOS</span> HOT BEATZ</a>';
@@ -44,5 +45,6 @@ function khb_footer() {
     echo '</div>';
     echo '<p class="copyright">© ' . date('Y') . ' Omar Huertas LLC. All beats & recordings protected. KAOS HOT BEATZ™.</p>';
     echo '</div></footer>';
-    echo '<script src="/assets/main.js"></script></body></html>';
+    $jsv = @filemtime(__DIR__ . '/assets/main.js') ?: time();
+    echo '<script src="/assets/main.js?v=' . $jsv . '"></script></body></html>';
 }
