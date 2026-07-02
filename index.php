@@ -3,7 +3,7 @@ require_once __DIR__ . '/partials.php';
 $beats = array_filter(khb_load('beats'), fn($b) => empty($b['sold_exclusive']));
 usort($beats, fn($a, $b) => ($b['ts'] ?? 0) <=> ($a['ts'] ?? 0));
 $featured = array_slice($beats, 0, 5);
-$music = array_slice(khb_load('music'), 0, 3);
+$music = array_slice(suno_tracks(), 0, 3);
 $tiers = license_tiers();
 khb_header('Original Beats & Studio Sessions', '');
 ?>

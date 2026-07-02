@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/partials.php';
-$music = khb_load('music');
-usort($music, fn($a, $b) => ($b['ts'] ?? 0) <=> ($a['ts'] ?? 0));
+$music = suno_tracks();
+$playlists = suno_playlists();
 khb_header('Listen', 'listen.php');
 ?>
 <section class="hero" style="padding-bottom:36px">
@@ -14,6 +14,16 @@ khb_header('Listen', 'listen.php');
 </section>
 <section>
   <div class="wrap">
+    <div class="section-head"><div><p class="ey">Playlists</p><h2>Curated on Suno</h2></div></div>
+    <div class="grid c3" style="margin-bottom:44px">
+      <?php foreach ($playlists as $p): ?>
+      <a class="card" href="https://suno.com/playlist/<?= h($p['id']) ?>" target="_blank" rel="noopener" style="display:block">
+        <h3 style="margin:0">▶ <?= h($p['name']) ?></h3>
+        <p class="muted" style="margin:.3em 0 0"><?= (int)$p['count'] ?> tracks · Suno ↗</p>
+      </a>
+      <?php endforeach; ?>
+    </div>
+    <div class="section-head"><div><p class="ey">Tracks</p><h2>Featured records</h2></div></div>
     <?php if (!$music): ?>
       <div class="card"><p class="muted">Tracks land here once added in the admin panel (Music tab). For now, stream everything on <a href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">Suno ↗</a>.</p></div>
     <?php else: ?>

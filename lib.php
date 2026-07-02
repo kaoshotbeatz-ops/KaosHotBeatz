@@ -30,6 +30,33 @@ if (!defined('BEATSTARS_URL'))  define('BEATSTARS_URL', 'https://www.beatstars.c
 if (!defined('STAT_PLAYS'))     define('STAT_PLAYS', '36K+');
 if (!defined('STAT_SONGS'))     define('STAT_SONGS', '25+');
 
+// Featured Suno tracks (shown when admin hasn't added its own via the Music tab).
+function default_suno_tracks() {
+    return [
+        ['title' => 'Not what I wrote',        'suno' => 'c33488af-3b69-4edd-858c-b5d5917b2105', 'tags' => 'Hip-Hop'],
+        ['title' => 'Caves & Scrolls',          'suno' => '9c86e82b-35f7-4cdf-9c20-e0a3546a4700', 'tags' => 'Christian Hip-Hop'],
+        ['title' => 'Who is Salem Most High',    'suno' => 'a048fbf4-fe5b-4ce6-89c4-6f542d4d3434', 'tags' => 'Christian Hip-Hop'],
+        ['title' => 'Doc I hear voices',         'suno' => '8c9a953d-47e2-4746-884a-895cc669f55b', 'tags' => 'Boom Bap'],
+        ['title' => 'Dramatic',                  'suno' => 'b777f51b-0b24-49fd-8179-caeb47e8ace2', 'tags' => 'Hip-Hop'],
+        ['title' => 'My Father Never Warned Me', 'suno' => 'acf97e1a-9413-4d84-8c33-fe02a4696c8a', 'tags' => 'Soul'],
+        ['title' => 'Down in the Gutter',        'suno' => 'e1a54a1f-ebfb-4f1c-8907-6de6e719cb5f', 'tags' => 'Raw'],
+        ["title" => "Can't Stop Me",             'suno' => '13d0c53f-5fd6-4bdf-99e4-9314d5ddf049', 'tags' => 'Hip-Hop'],
+    ];
+}
+// Merge admin-added tracks (data/music.json) over the featured defaults.
+function suno_tracks() {
+    $admin = khb_load('music');
+    return $admin ? $admin : default_suno_tracks();
+}
+// Curated Suno playlists.
+function suno_playlists() {
+    return [
+        ['name' => 'Gods List',   'id' => '1989bb7f-fb2f-4aa8-9d8b-09a90793370e', 'count' => 23],
+        ['name' => 'Beatz',       'id' => 'e3018dde-0c68-40e3-905e-615c9661e06e', 'count' => 27],
+        ['name' => 'Gods List 2', 'id' => 'fd1b14ce-dba0-4c78-8472-459f2ee5f4b5', 'count' => 20],
+    ];
+}
+
 // Extract a Suno song ID from a full URL or bare ID (for iframe embeds).
 function suno_id($v) {
     $v = trim($v);
