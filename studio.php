@@ -43,6 +43,7 @@ $PADS = [
 
     <div class="machine xl-skin">
       <div id="unlock"><div class="p">▶</div><div class="t" id="unlockTxt">Tap to load the kit</div></div>
+      <audio id="silentUnlock" loop playsinline style="display:none" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="></audio>
       <div class="xl-lcd">
         <div class="xl-lcd-scan"></div>
         <div class="xl-lcd-row1">
@@ -86,19 +87,34 @@ var padEls=[].slice.call(document.querySelectorAll('.pad'));
 function flash(i){ var el=padEls[i]; if(!el) return; el.classList.add('hit'); setTimeout(function(){el.classList.remove('hit');},90); }
 function trigger(i,when){ playSample(i,when); flash(i); }
 
-// ---- unlock + load kit ----
+// ---- load kit (fetch/decode starts immediately — doesn't need a gesture) ----
 var unlockEl=document.getElementById('unlock');
+var kitLoading=false, kitDone=0;
 function loadKit(){
+  if(kitLoading) return; kitLoading=true;
   setStatus('loading kit…');
-  var done=0;
   for(var i=0;i<16;i++){ (function(i){
     fetch('/assets/drums/pad'+i+'.wav').then(function(r){ return r.arrayBuffer(); })
       .then(function(ab){ return ctx().decodeAudioData(ab); })
-      .then(function(buf){ buffers[i]=buf; done++; if(done>=16){ ready=true; setStatus('kit loaded — bang it'); } })
-      .catch(function(){ done++; if(done>=16){ ready=true; setStatus('kit ready'); } });
+      .then(function(buf){ buffers[i]=buf; kitDone++; if(kitDone>=16){ ready=true; setStatus('kit loaded — bang it'); } })
+      .catch(function(){ kitDone++; if(kitDone>=16){ ready=true; setStatus('kit ready'); } });
   })(i); }
 }
-function unlock(){ var c=ctx(); var s=c.createBufferSource(); s.buffer=c.createBuffer(1,1,22050); s.connect(c.destination); s.start(0); unlockEl.classList.add('hide'); loadKit(); }
+loadKit(); // fetch+decode right away — no need to wait for the tap on any device
+
+// ---- unlock: required on iOS to actually hear anything (mute-switch + gesture rules) ----
+var silentEl=document.getElementById('silentUnlock');
+function unlock(){
+  var c=ctx();
+  // 1) resume the Web Audio context (required after any user gesture)
+  var s=c.createBufferSource(); s.buffer=c.createBuffer(1,1,22050); s.connect(c.destination); s.start(0);
+  // 2) play a real <audio> element — this switches iOS's audio session to "playback" category,
+  //    which makes sound audible even if the phone's silent/mute switch is flipped on.
+  //    (Web Audio alone respects the mute switch on iPhone; a played <audio> tag does not.)
+  if(silentEl){ silentEl.volume=0.01; var p=silentEl.play(); if(p&&p.catch) p.catch(function(){}); }
+  unlockEl.classList.add('hide');
+  if(!ready) setStatus('loading kit…'); else setStatus('kit loaded — bang it');
+}
 unlockEl.addEventListener('click',unlock);
 unlockEl.addEventListener('touchstart',function(e){ e.preventDefault(); unlock(); },{passive:false});
 
