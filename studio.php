@@ -97,18 +97,31 @@ $MELODY = [
       <p class="muted" style="font-size:.85rem;margin-bottom:16px">Drag the vinyl to scratch it. Hit ▶ Spin for straight playback. Watch the meters bounce with your beat.</p>
       <div class="deck-mixer">
         <div class="deck">
-          <div class="vinyl" id="vinyl"><div class="vlabel">CREAM</div></div>
+          <div class="platter-wrap">
+            <div class="vinyl" id="vinyl"><div class="vlabel">CREAM</div></div>
+            <div class="tonearm" id="tonearm"><div class="headshell"></div></div>
+          </div>
           <div class="deck-controls">
             <button class="btn ghost sm" id="ttPlay">▶ Spin</button>
             <button class="btn ghost sm" id="ttStop">■ Stop</button>
           </div>
+          <div class="scratch-src">
+            <label class="mono muted" style="font-size:.7rem">SCRATCH SRC</label>
+            <select id="scratchSrc">
+              <option value="0">Soul Loop (Cream)</option>
+              <option value="1">Hype Tag 1</option>
+              <option value="2">Hype Tag 2</option>
+              <option value="3">Hype Tag 3</option>
+            </select>
+            <p class="muted" style="font-size:.72rem;margin-top:6px">Hype Tags are synthesized in-browser — not sampled vocals. Send your own recorded ad-libs and I'll load those instead.</p>
+          </div>
         </div>
         <div class="mixer">
-          <div class="strip"><label>DRUMS</label><div class="meter"><i id="mDrums"></i></div><input type="range" orient="vertical" id="gDrums" min="0" max="1.5" step="0.01" value="1"></div>
-          <div class="strip"><label>MELODY</label><div class="meter"><i id="mMelody"></i></div><input type="range" orient="vertical" id="gMelody" min="0" max="1.5" step="0.01" value="1"></div>
-          <div class="strip"><label>KEYS</label><div class="meter"><i id="mKeys"></i></div><input type="range" orient="vertical" id="gKeys" min="0" max="1.5" step="0.01" value="1"></div>
-          <div class="strip"><label>TT</label><div class="meter"><i id="mTT"></i></div><input type="range" orient="vertical" id="gTT" min="0" max="1.5" step="0.01" value="1"></div>
-          <div class="strip master"><label>MASTER</label><div class="meter"><i id="mMaster"></i></div><input type="range" orient="vertical" id="gMaster" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip"><label>DRUMS</label><button class="mute" id="xDrums">M</button><div class="meter"><i id="mDrums"></i></div><input type="range" orient="vertical" id="gDrums" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip"><label>MELODY</label><button class="mute" id="xMelody">M</button><div class="meter"><i id="mMelody"></i></div><input type="range" orient="vertical" id="gMelody" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip"><label>KEYS</label><button class="mute" id="xKeys">M</button><div class="meter"><i id="mKeys"></i></div><input type="range" orient="vertical" id="gKeys" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip"><label>TT</label><button class="mute" id="xTT">M</button><div class="meter"><i id="mTT"></i></div><input type="range" orient="vertical" id="gTT" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip master"><label>MASTER</label><button class="mute" id="xMaster">M</button><div class="meter"><i id="mMaster"></i></div><input type="range" orient="vertical" id="gMaster" min="0" max="1.5" step="0.01" value="1"></div>
         </div>
       </div>
     </div>
@@ -192,6 +205,7 @@ function ctx(){
 
     drumAn=mkAnalyser(AC,drumMakeup); melodyAn=mkAnalyser(AC,melodyGain); keysAn=mkAnalyser(AC,keysGain); ttAn=mkAnalyser(AC,ttGain);
     masterAn=mkAnalyser(AC,masterMakeup);
+    buildHypeTags(AC);
     startMeters(); startCompMeters();
   }
   if(AC.state==='suspended') AC.resume();
@@ -204,6 +218,20 @@ var _mbuf=new Uint8Array(256);
 function meterLevel(an){ if(!an) return 0; an.getByteTimeDomainData(_mbuf); var sum=0; for(var i=0;i<_mbuf.length;i++){ var v=(_mbuf[i]-128)/128; sum+=v*v; } return Math.sqrt(sum/_mbuf.length); }
 function setMeter(id,lvl){ var el=document.getElementById(id); if(el) el.style.height=Math.min(100,lvl*280)+'%'; }
 function startMeters(){ function loop(){ setMeter('mDrums',meterLevel(drumAn)); setMeter('mMelody',meterLevel(melodyAn)); setMeter('mKeys',meterLevel(keysAn)); setMeter('mTT',meterLevel(ttAn)); setMeter('mMaster',meterLevel(masterAn)); requestAnimationFrame(loop); } loop(); }
+
+// ---- synthesized "hype tag" scratch stabs (no samples — pure math, zero copyright risk) ----
+var hypeBuffers=[];
+function makeHypeBuffer(c,f0,f1,dur){
+  var sr=c.sampleRate, len=Math.floor(sr*dur), buf=c.createBuffer(1,len,sr), d=buf.getChannelData(0);
+  for(var i=0;i<len;i++){
+    var t=i/sr, freq=f0+(f1-f0)*(t/dur);
+    var env=Math.min(1,t/0.008)*Math.pow(1-t/dur,1.6);
+    var v=Math.sin(2*Math.PI*freq*t)+0.5*Math.sin(2*Math.PI*freq*2.01*t)+0.28*Math.sin(2*Math.PI*freq*3.03*t);
+    d[i]=v*env*0.55;
+  }
+  return buf;
+}
+function buildHypeTags(c){ hypeBuffers=[ makeHypeBuffer(c,260,140,0.32), makeHypeBuffer(c,180,320,0.26), makeHypeBuffer(c,220,90,0.4) ]; }
 
 // ---- compressor gain-reduction meters (reads the node's live .reduction, in dB) ----
 function startCompMeters(){ function loop(){
@@ -377,9 +405,12 @@ bindFader('gTT',function(){return ttGain;});
 bindFader('gMaster',function(){return master;});
 
 // ---- turntable: scratch (drag the vinyl) + spin (straight playback) ----
-var vinylEl=document.getElementById('vinyl');
-var ttScratchSrc=null, ttLoopSrc=null, ttPlayhead=0, ttDragging=false, ttLastAngle=0;
-function ttBuffer(){ return buffers[1][0]; } // scratches the "Cream" soul loop — the artist's own sample
+var vinylEl=document.getElementById('vinyl'), tonearmEl=document.getElementById('tonearm');
+var ttScratchSrc=null, ttLoopSrc=null, ttPlayhead=0, ttDragging=false, ttLastAngle=0, scratchSrcIdx=0;
+document.getElementById('scratchSrc').addEventListener('change',function(){ scratchSrcIdx=+this.value; ttPlayhead=0; });
+function ttBuffer(){ return scratchSrcIdx===0 ? buffers[1][0] : hypeBuffers[scratchSrcIdx-1]; }
+function armDown(){ if(tonearmEl) tonearmEl.classList.add('down'); }
+function armUp(){ if(tonearmEl) tonearmEl.classList.remove('down'); }
 function angleAt(x,y){ var r=vinylEl.getBoundingClientRect(); var cx=r.left+r.width/2, cy=r.top+r.height/2; return Math.atan2(y-cy,x-cx); }
 function scratchAt(offset,rate){
   var buf=ttBuffer(); if(!buf) return;
@@ -389,19 +420,34 @@ function scratchAt(offset,rate){
   s.connect(ttGain); s.start(0, Math.max(0,Math.min(buf.duration-0.05,offset)));
   ttScratchSrc=s; setTimeout(function(){ try{ s.stop(); }catch(e){} },100);
 }
-function ttDown(x,y){ if(!ttBuffer()){ setStatus('still loading…'); return; } ttDragging=true; ttLastAngle=angleAt(x,y); vinylEl.classList.remove('spin'); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } }
+function ttDown(x,y){ if(!ttBuffer()){ setStatus('still loading…'); return; } ttDragging=true; ttLastAngle=angleAt(x,y); vinylEl.classList.remove('spin'); armDown(); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } }
 function ttMove(x,y){ if(!ttDragging) return; var buf=ttBuffer(); if(!buf) return; var a=angleAt(x,y); var d=a-ttLastAngle; if(d>Math.PI) d-=2*Math.PI; if(d<-Math.PI) d+=2*Math.PI; ttLastAngle=a;
   var dt=d*(buf.duration/(2*Math.PI))*2.4; ttPlayhead=Math.max(0,Math.min(buf.duration-0.05,ttPlayhead+dt));
   var rate=dt/0.016; if(Math.abs(rate)<0.15) rate=rate<0?-0.15:0.15; scratchAt(ttPlayhead,rate); }
-function ttUp(){ ttDragging=false; }
+function ttUp(){ ttDragging=false; if(!ttLoopSrc) armUp(); }
 vinylEl.addEventListener('mousedown',function(e){ e.preventDefault(); ttDown(e.clientX,e.clientY); });
 document.addEventListener('mousemove',function(e){ ttMove(e.clientX,e.clientY); });
 document.addEventListener('mouseup',ttUp);
 vinylEl.addEventListener('touchstart',function(e){ e.preventDefault(); var t=e.touches[0]; ttDown(t.clientX,t.clientY); },{passive:false});
 vinylEl.addEventListener('touchmove',function(e){ e.preventDefault(); var t=e.touches[0]; ttMove(t.clientX,t.clientY); },{passive:false});
 vinylEl.addEventListener('touchend',ttUp);
-document.getElementById('ttPlay').addEventListener('click',function(){ var buf=ttBuffer(); if(!buf){ setStatus('still loading…'); return; } ctx(); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} } var s=AC.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(ttGain); s.start(0); ttLoopSrc=s; vinylEl.classList.add('spin'); setStatus('turntable spinning'); });
-document.getElementById('ttStop').addEventListener('click',function(){ if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } vinylEl.classList.remove('spin'); });
+document.getElementById('ttPlay').addEventListener('click',function(){ var buf=ttBuffer(); if(!buf){ setStatus('still loading…'); return; } ctx(); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} } var s=AC.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(ttGain); s.start(0); ttLoopSrc=s; vinylEl.classList.add('spin'); armDown(); setStatus('turntable spinning'); });
+document.getElementById('ttStop').addEventListener('click',function(){ if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } vinylEl.classList.remove('spin'); armUp(); });
+
+// ---- mixer mutes (remember prior fader value, restore on un-mute) ----
+function bindMute(btnId,faderId,getNode){
+  var btn=document.getElementById(btnId), fader=document.getElementById(faderId), prev=1;
+  btn.addEventListener('click',function(){
+    ctx(); var n=getNode(); var muted=btn.classList.toggle('on');
+    if(muted){ prev=+fader.value; if(n) n.gain.value=0; }
+    else { fader.value=prev; if(n) n.gain.value=prev; }
+  });
+}
+bindMute('xDrums','gDrums',function(){return drumGain;});
+bindMute('xMelody','gMelody',function(){return melodyGain;});
+bindMute('xKeys','gKeys',function(){return keysGain;});
+bindMute('xTT','gTT',function(){return ttGain;});
+bindMute('xMaster','gMaster',function(){return master;});
 
 // ---- keyboard: pitch-shifted one-shots, switchable voice, switchable octave ----
 var VOICE_IDX=[11,12,13,14]; // melody bank indices: Rhodes stab, Chord shot, Stab, Bells
