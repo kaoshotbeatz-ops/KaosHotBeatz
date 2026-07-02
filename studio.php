@@ -383,17 +383,45 @@ function hit(i){
   var now=ctx().currentTime; trigger(curBank,i,now); if(recording){ var raw=(now-recStart)%loopDur(); events.push({i:i,bank:curBank,t:quantize(raw)}); renderSeq(); }
 }
 
-// ---- sequencer screen: renders every recorded hit as a block on its track's lane ----
+// ---- sequencer screen: renders every recorded hit as a DRAGGABLE block on its track's lane, with beat/bar gridlines ----
 var mutedTracks={};
+function gridBackground(){
+  var stepsPerBeat=quantizeDiv?(quantizeDiv/4):1;
+  var totalSteps=BARS*BEATS_PER_BAR*stepsPerBeat;
+  var stepPct=100/totalSteps, barPct=100/BARS;
+  return 'repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0, rgba(255,255,255,.07) 1px, transparent 1px, transparent '+stepPct+'%), '+
+         'repeating-linear-gradient(90deg, rgba(225,29,29,.4) 0, rgba(225,29,29,.4) 1.5px, transparent 1.5px, transparent '+barPct+'%)';
+}
+function makeBlockDraggable(el,ev,lane){
+  el.addEventListener('pointerdown',function(e){
+    e.preventDefault(); e.stopPropagation();
+    el.setPointerCapture(e.pointerId); el.classList.add('dragging');
+    var d=loopDur();
+    function move(e2){
+      var r=lane.getBoundingClientRect();
+      var frac=Math.max(0,Math.min(0.999,(e2.clientX-r.left)/r.width));
+      ev.t=quantize(frac*d);
+      el.style.left=((ev.t/d)*100)+'%';
+    }
+    function up(e2){
+      el.releasePointerCapture(e.pointerId); el.classList.remove('dragging');
+      document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up);
+      setStatus('moved a hit in the sequence');
+    }
+    document.addEventListener('pointermove',move); document.addEventListener('pointerup',up);
+  });
+}
 function renderSeq(){
   var lanes=[].slice.call(document.querySelectorAll('.seq-lane'));
-  lanes.forEach(function(lane){ lane.innerHTML=''; });
+  var bg=gridBackground();
+  lanes.forEach(function(lane){ lane.innerHTML=''; lane.style.backgroundImage=bg; });
   var d=loopDur();
   events.forEach(function(ev){
     var lane=document.querySelector('.seq-lane[data-bank="'+(ev.bank||0)+'"][data-i="'+ev.i+'"]');
     if(!lane) return;
     var b=document.createElement('div'); b.className='seq-block'; b.style.left=((ev.t/d)*100)+'%';
     lane.appendChild(b);
+    makeBlockDraggable(b,ev,lane);
   });
 }
 [].slice.call(document.querySelectorAll('.seq-mute')).forEach(function(btn){
@@ -460,6 +488,7 @@ qzBtns.forEach(function(btn){ btn.addEventListener('click',function(){
   var lbl=quantizeDiv?('1/'+quantizeDiv):'OFF';
   var lq=document.getElementById('lcdQtz'); if(lq) lq.textContent='QTZ '+lbl;
   setStatus('quantize: '+lbl);
+  renderSeq();
 }); });
 
 // ---- oscilloscope: draws the live master waveform, reacts to every hit ----

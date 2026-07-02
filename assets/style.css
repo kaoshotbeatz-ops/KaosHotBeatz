@@ -457,3 +457,8 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .switch-pill span{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.03em}
 .btn.overdub{background:#1c1c1f;color:var(--gold2);border-color:#000}
 .btn.overdub.on{background:#ffd152;color:#000;animation:pulse .8s infinite}
+
+/* draggable sequencer blocks + grid */
+.seq-block{cursor:grab;touch-action:none;z-index:2}
+.seq-block:hover{background:var(--gold)!important;box-shadow:0 0 6px var(--gold)}
+.seq-block.dragging{cursor:grabbing;z-index:10;box-shadow:0 0 10px var(--gold);width:8px}
