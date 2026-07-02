@@ -19,17 +19,46 @@ khb_header('Original Beats & Studio Sessions', '');
         <a class="btn ghost" href="/book.php">Book a Session</a>
       </div>
       <div class="socials">
-        <a href="<?= h(BEATSTARS_URL) ?>" target="_blank" rel="noopener">⭐ BeatStars</a>
-        <a href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">🎵 Suno</a>
-        <a href="<?= h(INSTAGRAM_URL) ?>" target="_blank" rel="noopener">📸 Instagram</a>
+        <a class="soc" href="<?= h(BEATSTARS_URL) ?>" target="_blank" rel="noopener">⭐ BeatStars</a>
+        <a class="soc" href="<?= h(SOUNDCLOUD_URL) ?>" target="_blank" rel="noopener">☁ SoundCloud</a>
+        <a class="soc" href="<?= h(YOUTUBE_URL) ?>" target="_blank" rel="noopener">▶ YouTube</a>
+        <a class="soc" href="<?= h(INSTAGRAM_URL) ?>" target="_blank" rel="noopener">📸 Instagram</a>
+        <a class="soc" href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">Suno</a>
         <span class="wave" aria-hidden="true"><?php for($i=0;$i<14;$i++) echo '<i></i>'; ?></span>
       </div>
     </div>
-    <div class="tt">
-      <div class="platter"><span class="lbl">KAOS<br>HOT<br>BEATZ</span></div>
-      <div class="arm"></div>
-      <div class="fader"></div>
-      <span class="badge">SL-1200 MK2</span>
+    <div class="mpc">
+      <svg viewBox="0 0 600 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Akai MPC 2000XL sampler">
+        <rect x="8" y="8" width="584" height="364" rx="18" fill="#1e1e22" stroke="#000" stroke-width="3"/>
+        <rect x="8" y="8" width="584" height="22" rx="18" fill="#2a2a30"/>
+        <rect class="scr" x="36" y="44" width="214" height="104" rx="6" stroke="#000" stroke-width="3"/>
+        <text x="48" y="72" fill="#3ecf8e" font-family="monospace" font-size="16">KAOS HOT BEATZ</text>
+        <line class="scrline" x1="48" y1="90" x2="234" y2="90"/>
+        <line class="scrline" x1="48" y1="106" x2="200" y2="106"/>
+        <text x="48" y="134" fill="#3ecf8e" font-family="monospace" font-size="12">BPM 90   BOOM BAP</text>
+        <circle class="wheel" cx="504" cy="94" r="58"/>
+        <circle cx="504" cy="94" r="40" fill="none" stroke="#000" stroke-width="2"/>
+        <circle cx="504" cy="54" r="6" fill="#ffb400"/>
+        <text class="lbl2" x="504" y="168" text-anchor="middle">DATA WHEEL</text>
+        <rect class="btn" x="36" y="166" width="36" height="18" rx="3"/>
+        <rect class="btn" x="80" y="166" width="36" height="18" rx="3"/>
+        <rect class="btn" x="124" y="166" width="36" height="18" rx="3"/>
+        <rect class="btn" x="168" y="166" width="36" height="18" rx="3"/>
+        <circle class="btn" cx="54" cy="212" r="13"/>
+        <circle class="btn" cx="92" cy="212" r="13"/>
+        <rect class="btn" x="118" y="201" width="122" height="20" rx="10"/>
+        <rect x="40" y="252" width="200" height="10" rx="5" fill="#0c0c0e" stroke="#000" stroke-width="2"/>
+        <rect x="118" y="246" width="16" height="22" rx="3" fill="#ffb400" stroke="#000" stroke-width="2"/>
+        <rect x="40" y="292" width="200" height="10" rx="5" fill="#0c0c0e" stroke="#000" stroke-width="2"/>
+        <rect x="168" y="286" width="16" height="22" rx="3" fill="#c9c9cf" stroke="#000" stroke-width="2"/>
+        <?php
+          $cols=[305,356,407,458]; $rows=[164,215,266,317];
+          $blink=['p1',null,null,'p2',null,'p3',null,null,null,null,'p4',null,null,null,null,null];
+          $i=0; foreach($rows as $ry){ foreach($cols as $cx){ $cls='pad'.(!empty($blink[$i])?' '.$blink[$i]:''); echo '<rect class="'.$cls.'" x="'.$cx.'" y="'.$ry.'" width="44" height="44" rx="5"/>'; $i++; } }
+        ?>
+        <text class="lbl" x="36" y="352">MPC2000XL</text>
+        <text class="lbl2" x="305" y="150">16 LEVELS</text>
+      </svg>
     </div>
   </div>
 </section>
@@ -79,26 +108,6 @@ khb_header('Original Beats & Studio Sessions', '');
     </div>
   </div>
 </section>
-
-<?php if ($music): ?>
-<section>
-  <div class="wrap">
-    <div class="section-head"><div><p class="ey">Straight from Suno</p><h2>Now playing</h2></div>
-      <a class="suno-cta" href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">Full catalog on Suno ↗</a></div>
-    <div class="suno-grid">
-      <?php foreach ($music as $m): $sid = suno_id($m['suno']); ?>
-        <div class="suno-embed"><iframe src="https://suno.com/embed/<?= h($sid) ?>" loading="lazy" allow="autoplay" title="<?= h($m['title'] ?? 'Track') ?>"></iframe></div>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-<?php else: ?>
-<section>
-  <div class="wrap"><div class="section-head"><div><p class="ey">Straight from Suno</p><h2>Now playing</h2></div></div>
-    <div class="card"><p class="muted">Feature your Suno tracks here — add their links in the admin panel (Music tab). Meanwhile, <a href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">catch the full catalog on Suno ↗</a></p></div>
-  </div>
-</section>
-<?php endif; ?>
 
 <section style="background:var(--panel)">
   <div class="wrap">

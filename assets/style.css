@@ -229,3 +229,22 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .gfx-icon:hover .cap{color:var(--ink)}
 @media(max-width:820px){.gfx-row{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:420px){.gfx-row{grid-template-columns:repeat(2,1fr)}}
+
+/* ===== MPC 2000XL hero centerpiece ===== */
+.mpc{width:min(560px,94vw);margin:0 auto;filter:drop-shadow(0 26px 40px rgba(0,0,0,.6))}
+.mpc svg{width:100%;height:auto;display:block}
+.mpc .pad{fill:#26262c;stroke:#000;stroke-width:2}
+.mpc .pad.on{fill:var(--gold)}
+.mpc .pad.p1{animation:padblink 1.6s steps(1) infinite}
+.mpc .pad.p2{animation:padblink 1.6s steps(1) infinite .4s}
+.mpc .pad.p3{animation:padblink 1.6s steps(1) infinite .8s}
+.mpc .pad.p4{animation:padblink 1.6s steps(1) infinite 1.2s}
+@keyframes padblink{0%,50%{fill:var(--gold)}51%,100%{fill:#26262c}}
+.mpc .scr{fill:#0b3b2c}
+.mpc .scrline{stroke:#3ecf8e;stroke-width:2;opacity:.8}
+.mpc .wheel{fill:#1a1a1e;stroke:#000;stroke-width:3}
+.mpc .btn{fill:#2a2a30;stroke:#000;stroke-width:1.5}
+.mpc .lbl{fill:var(--gold);font-family:var(--disp);font-size:15px;letter-spacing:1px}
+.mpc .lbl2{fill:#9a978f;font-family:var(--mono);font-size:8px;letter-spacing:1px}
+
+.socials .soc{display:inline-flex;align-items:center;gap:6px}
