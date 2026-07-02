@@ -1,0 +1,14 @@
+config.php
+data/*.json
+data/*.log
+assets/beats/*.wav
+assets/beats/*.zip
+assets/beats/*.mp3
+assets/beats/*.m4a
+assets/beats/*.aif
+assets/beats/*.aiff
+assets/img/*.jpg
+assets/img/*.jpeg
+assets/img/*.png
+assets/img/*.webp
+.DS_Store

@@ -1,0 +1,6 @@
+# Allow preview audio to stream; block masters & stems from direct access.
+Order Deny,Allow
+Deny from all
+<FilesMatch "-preview\.(mp3|m4a)$">
+  Allow from all
+</FilesMatch>

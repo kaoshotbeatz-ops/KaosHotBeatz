@@ -1,0 +1,13 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/USER/public_html/kaoshotbeatz.com/
+    - /bin/mkdir -p ${DEPLOYPATH}assets/img ${DEPLOYPATH}assets/beats ${DEPLOYPATH}data ${DEPLOYPATH}admin/data ${DEPLOYPATH}member
+    - /bin/cp -f *.php ${DEPLOYPATH}
+    - /bin/cp -f .htaccess ${DEPLOYPATH}
+    - /bin/cp -f assets/style.css assets/main.js ${DEPLOYPATH}assets/
+    - /bin/cp -f assets/beats/.htaccess ${DEPLOYPATH}assets/beats/
+    - /bin/cp -f data/.htaccess ${DEPLOYPATH}data/
+    - /bin/cp -f member/*.php ${DEPLOYPATH}member/
+    - /bin/cp -f admin/*.php admin/.htaccess ${DEPLOYPATH}admin/
+    - /bin/cp -f admin/data/.htaccess ${DEPLOYPATH}admin/data/
