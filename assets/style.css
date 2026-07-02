@@ -282,3 +282,13 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .cal-cell.open:hover{background:var(--gold);color:#000}
 .cal-cell.sel{background:var(--gold);color:#000;border-color:#000}
 @media(max-width:520px){.cal-cell{font-size:.85rem;border-radius:6px}}
+
+/* ===== real-photo hero ===== */
+.hero.photo{
+  background:linear-gradient(180deg,rgba(8,8,10,.5) 0%,rgba(8,8,10,.72) 55%,rgba(8,8,10,.94) 100%),
+             linear-gradient(90deg,rgba(225,29,29,.12),transparent 55%),
+             url('/assets/img/hero.jpg') center 32%/cover no-repeat, #0a0a0b;
+  padding:132px 0 92px}
+.hero.photo .wrap{display:block;max-width:1180px}
+.hero.photo h1{max-width:16ch}
+.hero.photo .lead{max-width:46ch}

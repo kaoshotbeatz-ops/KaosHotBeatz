@@ -7,39 +7,7 @@ $music = array_slice(suno_tracks(), 0, 3);
 $tiers = license_tiers();
 khb_header('Original Beats & Studio Sessions', '');
 ?>
-<section class="hero split brick">
-  <?php
-    $piece = '<span class="piece"><svg viewBox="0 0 1520 340" xmlns="http://www.w3.org/2000/svg">'
-      . '<text x="42" y="252" font-family="Anton,Impact,sans-serif" font-size="230" fill="#000">KAOSHOTBEATZ</text>'
-      . '<text x="26" y="234" font-family="Anton,Impact,sans-serif" font-size="230" fill="#e11d1d" stroke="#000" stroke-width="8" paint-order="stroke" style="paint-order:stroke">KAOSHOTBEATZ</text>'
-      . '<polygon points="1360,110 1470,150 1360,190" fill="#e11d1d" stroke="#000" stroke-width="8"/>'
-      . '<circle cx="22" cy="70" r="8" fill="#e11d1d"/><circle cx="70" cy="40" r="5" fill="#e11d1d"/>'
-      . '<circle cx="1330" cy="300" r="7" fill="#e11d1d"/><circle cx="1290" cy="316" r="4" fill="#e11d1d"/>'
-      . '</svg></span>';
-  ?>
-  <div class="graf-scene"><div class="graf-track"><?= $piece . $piece ?></div></div>
-  <?php
-    $bld = [[0,90,120],[95,64,60],[165,110,150],[280,72,92],[358,128,182],[492,82,112],[578,104,162],[686,58,72],[748,120,200],[872,76,120],[952,96,150],[1052,66,86],[1122,120,176],[1246,92,132],[1342,58,100]];
-    $city = '<svg viewBox="0 0 1400 260" xmlns="http://www.w3.org/2000/svg">';
-    foreach ($bld as $k => $b) {
-        list($x,$w,$h) = $b; $y = 260 - $h;
-        $city .= '<rect x="'.$x.'" y="'.$y.'" width="'.$w.'" height="'.$h.'" fill="#0c0c10" stroke="#000" stroke-width="2"/>';
-        for ($wx = $x + 10; $wx < $x + $w - 8; $wx += 16) {
-            for ($wy = $y + 12; $wy < 252; $wy += 18) {
-                $fill = (($wx + $wy + $k) % 5 == 0) ? '#e11d1d' : '#1b1b20';
-                $city .= '<rect x="'.$wx.'" y="'.$wy.'" width="7" height="9" fill="'.$fill.'"/>';
-            }
-        }
-    }
-    foreach ([[398,78],[792,60]] as $wt) {
-        list($tx,$ty) = $wt;
-        $city .= '<polygon points="'.($tx-16).','.$ty.' '.($tx+16).','.$ty.' '.($tx+12).','.($ty-22).' '.($tx-12).','.($ty-22).'" fill="#0c0c10" stroke="#000" stroke-width="2"/>';
-        $city .= '<rect x="'.($tx-14).'" y="'.$ty.'" width="4" height="10" fill="#0c0c10"/><rect x="'.($tx+10).'" y="'.$ty.'" width="4" height="10" fill="#0c0c10"/>';
-    }
-    $city .= '<line x1="806" y1="60" x2="806" y2="30" stroke="#000" stroke-width="3"/><circle cx="806" cy="27" r="3" fill="#e11d1d"/>';
-    $city .= '</svg>';
-  ?>
-  <div class="cityline"><div class="cityline-track"><?= $city . $city ?></div></div>
+<section class="hero photo">
   <div class="wrap">
     <div>
       <p class="kicker"><?= h(ARTIST_TAGLINE) ?></p>
@@ -57,39 +25,6 @@ khb_header('Original Beats & Studio Sessions', '');
         <a class="soc" href="<?= h(INSTAGRAM_URL) ?>" target="_blank" rel="noopener">📸 Instagram</a>
         <span class="wave" aria-hidden="true"><?php for($i=0;$i<14;$i++) echo '<i></i>'; ?></span>
       </div>
-    </div>
-    <div class="mpc">
-      <svg viewBox="0 0 600 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Akai MPC 2000XL sampler">
-        <rect x="8" y="8" width="584" height="364" rx="18" fill="#1e1e22" stroke="#000" stroke-width="3"/>
-        <rect x="8" y="8" width="584" height="22" rx="18" fill="#2a2a30"/>
-        <rect class="scr" x="36" y="44" width="214" height="104" rx="6" stroke="#000" stroke-width="3"/>
-        <text x="48" y="72" fill="#3ecf8e" font-family="monospace" font-size="16">KAOS HOT BEATZ</text>
-        <line class="scrline" x1="48" y1="90" x2="234" y2="90"/>
-        <line class="scrline" x1="48" y1="106" x2="200" y2="106"/>
-        <text x="48" y="134" fill="#3ecf8e" font-family="monospace" font-size="12">BPM 90   BOOM BAP</text>
-        <circle class="wheel" cx="504" cy="94" r="58"/>
-        <circle cx="504" cy="94" r="40" fill="none" stroke="#000" stroke-width="2"/>
-        <circle cx="504" cy="54" r="6" fill="#e11d1d"/>
-        <text class="lbl2" x="504" y="168" text-anchor="middle">DATA WHEEL</text>
-        <rect class="btn" x="36" y="166" width="36" height="18" rx="3"/>
-        <rect class="btn" x="80" y="166" width="36" height="18" rx="3"/>
-        <rect class="btn" x="124" y="166" width="36" height="18" rx="3"/>
-        <rect class="btn" x="168" y="166" width="36" height="18" rx="3"/>
-        <circle class="btn" cx="54" cy="212" r="13"/>
-        <circle class="btn" cx="92" cy="212" r="13"/>
-        <rect class="btn" x="118" y="201" width="122" height="20" rx="10"/>
-        <rect x="40" y="252" width="200" height="10" rx="5" fill="#0c0c0e" stroke="#000" stroke-width="2"/>
-        <rect x="118" y="246" width="16" height="22" rx="3" fill="#e11d1d" stroke="#000" stroke-width="2"/>
-        <rect x="40" y="292" width="200" height="10" rx="5" fill="#0c0c0e" stroke="#000" stroke-width="2"/>
-        <rect x="168" y="286" width="16" height="22" rx="3" fill="#c9c9cf" stroke="#000" stroke-width="2"/>
-        <?php
-          $cols=[305,356,407,458]; $rows=[164,215,266,317];
-          $blink=['p1',null,null,'p2',null,'p3',null,null,null,null,'p4',null,null,null,null,null];
-          $i=0; foreach($rows as $ry){ foreach($cols as $cx){ $cls='pad'.(!empty($blink[$i])?' '.$blink[$i]:''); echo '<rect class="'.$cls.'" x="'.$cx.'" y="'.$ry.'" width="44" height="44" rx="5"/>'; $i++; } }
-        ?>
-        <text class="lbl" x="36" y="352">MPC2000XL</text>
-        <text class="lbl2" x="305" y="150">16 LEVELS</text>
-      </svg>
     </div>
   </div>
 </section>
