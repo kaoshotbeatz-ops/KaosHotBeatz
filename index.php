@@ -38,7 +38,7 @@ khb_header('Original Beats & Studio Sessions', '');
         <text x="48" y="134" fill="#3ecf8e" font-family="monospace" font-size="12">BPM 90   BOOM BAP</text>
         <circle class="wheel" cx="504" cy="94" r="58"/>
         <circle cx="504" cy="94" r="40" fill="none" stroke="#000" stroke-width="2"/>
-        <circle cx="504" cy="54" r="6" fill="#ffb400"/>
+        <circle cx="504" cy="54" r="6" fill="#e11d1d"/>
         <text class="lbl2" x="504" y="168" text-anchor="middle">DATA WHEEL</text>
         <rect class="btn" x="36" y="166" width="36" height="18" rx="3"/>
         <rect class="btn" x="80" y="166" width="36" height="18" rx="3"/>
@@ -48,7 +48,7 @@ khb_header('Original Beats & Studio Sessions', '');
         <circle class="btn" cx="92" cy="212" r="13"/>
         <rect class="btn" x="118" y="201" width="122" height="20" rx="10"/>
         <rect x="40" y="252" width="200" height="10" rx="5" fill="#0c0c0e" stroke="#000" stroke-width="2"/>
-        <rect x="118" y="246" width="16" height="22" rx="3" fill="#ffb400" stroke="#000" stroke-width="2"/>
+        <rect x="118" y="246" width="16" height="22" rx="3" fill="#e11d1d" stroke="#000" stroke-width="2"/>
         <rect x="40" y="292" width="200" height="10" rx="5" fill="#0c0c0e" stroke="#000" stroke-width="2"/>
         <rect x="168" y="286" width="16" height="22" rx="3" fill="#c9c9cf" stroke="#000" stroke-width="2"/>
         <?php
@@ -63,7 +63,7 @@ khb_header('Original Beats & Studio Sessions', '');
   </div>
 </section>
 
-<span class="drip"><svg viewBox="0 0 1200 34" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path fill="#ffb400" d="M0 0h1200v10c-40 0-40 18-80 18s-40-12-80-12-40 20-80 20-40-16-80-16-40 10-80 10-40-18-80-18-40 16-80 16-40-14-80-14-40 20-80 20-40-18-80-18-40 12-80 12-40-16-80-16-40 14-80 14-40-10-80-10V0z"/><circle cx="150" cy="30" r="3" fill="#ffb400"/><circle cx="620" cy="33" r="2.5" fill="#ffb400"/><circle cx="980" cy="31" r="3" fill="#ffb400"/></svg></span>
+<span class="drip"><svg viewBox="0 0 1200 34" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path fill="#e11d1d" d="M0 0h1200v10c-40 0-40 18-80 18s-40-12-80-12-40 20-80 20-40-16-80-16-40 10-80 10-40-18-80-18-40 16-80 16-40-14-80-14-40 20-80 20-40-18-80-18-40 12-80 12-40-16-80-16-40 14-80 14-40-10-80-10V0z"/><circle cx="150" cy="30" r="3" fill="#e11d1d"/><circle cx="620" cy="33" r="2.5" fill="#e11d1d"/><circle cx="980" cy="31" r="3" fill="#e11d1d"/></svg></span>
 
 <div class="stats"><div class="wrap">
   <div class="stat"><div class="num"><?= h(STAT_PLAYS) ?></div><div class="lbl">Plays</div></div>
