@@ -312,3 +312,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
   letter-spacing:.06em;text-transform:uppercase;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .xl-skin .lab-top .live{color:#d8d8d2}
 .xl-skin .btn.ghost{border-color:#1a1a18;color:#e8e8e2}
+
+/* bank switch row (drums / soul melody) */
+.bank-row{display:flex;align-items:center;gap:10px;margin:6px 0 14px;flex-wrap:wrap}
+.btn.bank.on{background:var(--gold);color:#000}
