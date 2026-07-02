@@ -124,59 +124,62 @@ $MELODY = [
       </div>
     </div>
 
-    <div class="machine xl-skin" style="margin-top:26px">
-      <h3 style="margin:0 0 6px">Turntable &amp; Mixer</h3>
-      <p class="muted" style="font-size:.85rem;margin-bottom:16px">Drag the vinyl to scratch it. Hit ▶ Spin for straight playback. Watch the meters bounce with your beat.</p>
-      <div class="deck-mixer">
-        <div class="deck">
-          <div class="plinth">
-            <div class="platter-wrap">
-              <div class="vinyl" id="vinyl">
-                <div class="strobe-ring"></div>
-                <div class="vlabel">CREAM</div>
-                <div class="spindle"></div>
-              </div>
-              <div class="tonearm" id="tonearm">
-                <div class="counterweight"></div>
-                <div class="arm-tube"></div>
-                <div class="headshell"></div>
-              </div>
-              <div class="cue-light" id="cueLight"></div>
+    <div class="machine tt-skin" style="margin-top:26px">
+      <h3 style="margin:0 0 6px">Turntable</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:16px">Drag the vinyl to scratch it. Hit ▶ Spin for straight playback.</p>
+      <div class="deck">
+        <div class="plinth">
+          <div class="platter-wrap">
+            <div class="vinyl" id="vinyl">
+              <div class="strobe-ring"></div>
+              <div class="vlabel">CREAM</div>
+              <div class="spindle"></div>
             </div>
-            <div class="deck-side">
-              <div class="pitch-block">
-                <label class="mono">PITCH</label>
-                <div class="pitch-track"><input type="range" id="pitchFader" min="-8" max="8" value="0" step="0.1" orient="vertical"></div>
-                <b class="mono" id="pitchVal">0%</b>
-              </div>
-              <button class="startstop" id="startstopBtn">
-                <span class="ss-light" id="ssLight"></span>
-                START<br>STOP
-              </button>
+            <div class="tonearm" id="tonearm">
+              <div class="counterweight"></div>
+              <div class="arm-tube"></div>
+              <div class="headshell"></div>
             </div>
+            <div class="cue-light" id="cueLight"></div>
           </div>
-          <div class="deck-controls">
-            <button class="btn ghost sm" id="ttPlay">▶ Spin</button>
-            <button class="btn ghost sm" id="ttStop">■ Stop</button>
-          </div>
-          <div class="scratch-src">
-            <label class="mono muted" style="font-size:.7rem">SCRATCH SRC</label>
-            <select id="scratchSrc">
-              <option value="0">Soul Loop (Cream)</option>
-              <option value="1">Hype Tag 1</option>
-              <option value="2">Hype Tag 2</option>
-              <option value="3">Hype Tag 3</option>
-            </select>
-            <p class="muted" style="font-size:.72rem;margin-top:6px">Hype Tags are synthesized in-browser — not sampled vocals. Send your own recorded ad-libs and I'll load those instead.</p>
+          <div class="deck-side">
+            <div class="pitch-block">
+              <label class="mono">PITCH</label>
+              <div class="pitch-track"><input type="range" id="pitchFader" min="-8" max="8" value="0" step="0.1" orient="vertical"></div>
+              <b class="mono" id="pitchVal">0%</b>
+            </div>
+            <button class="startstop" id="startstopBtn">
+              <span class="ss-light" id="ssLight"></span>
+              START<br>STOP
+            </button>
           </div>
         </div>
-        <div class="mixer">
-          <div class="strip"><label>DRUMS</label><button class="mute" id="xDrums">M</button><div class="meter"><i id="mDrums"></i></div><input type="range" orient="vertical" id="gDrums" min="0" max="1.5" step="0.01" value="1"></div>
-          <div class="strip"><label>MELODY</label><button class="mute" id="xMelody">M</button><div class="meter"><i id="mMelody"></i></div><input type="range" orient="vertical" id="gMelody" min="0" max="1.5" step="0.01" value="1"></div>
-          <div class="strip"><label>KEYS</label><button class="mute" id="xKeys">M</button><div class="meter"><i id="mKeys"></i></div><input type="range" orient="vertical" id="gKeys" min="0" max="1.5" step="0.01" value="1"></div>
-          <div class="strip"><label>TT</label><button class="mute" id="xTT">M</button><div class="meter"><i id="mTT"></i></div><input type="range" orient="vertical" id="gTT" min="0" max="1.5" step="0.01" value="1"></div>
-          <div class="strip master"><label>MASTER</label><button class="mute" id="xMaster">M</button><div class="meter"><i id="mMaster"></i></div><input type="range" orient="vertical" id="gMaster" min="0" max="1.5" step="0.01" value="1"></div>
+        <div class="deck-controls">
+          <button class="btn ghost sm" id="ttPlay">▶ Spin</button>
+          <button class="btn ghost sm" id="ttStop">■ Stop</button>
         </div>
+        <div class="scratch-src">
+          <label class="mono muted" style="font-size:.7rem">SCRATCH SRC</label>
+          <select id="scratchSrc">
+            <option value="0">Soul Loop (Cream)</option>
+            <option value="1">Hype Tag 1</option>
+            <option value="2">Hype Tag 2</option>
+            <option value="3">Hype Tag 3</option>
+          </select>
+          <p class="muted" style="font-size:.72rem;margin-top:6px">Hype Tags are synthesized in-browser — not sampled vocals. Send your own recorded ad-libs and I'll load those instead.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="machine mackie-skin" style="margin-top:26px">
+      <h3 style="margin:0 0 6px">Mixer</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:16px">Watch the meters bounce with your beat.</p>
+      <div class="mixer">
+        <div class="strip"><label>DRUMS</label><button class="mute" id="xDrums">M</button><div class="meter"><i id="mDrums"></i></div><input type="range" orient="vertical" id="gDrums" min="0" max="1.5" step="0.01" value="1"></div>
+        <div class="strip"><label>MELODY</label><button class="mute" id="xMelody">M</button><div class="meter"><i id="mMelody"></i></div><input type="range" orient="vertical" id="gMelody" min="0" max="1.5" step="0.01" value="1"></div>
+        <div class="strip"><label>KEYS</label><button class="mute" id="xKeys">M</button><div class="meter"><i id="mKeys"></i></div><input type="range" orient="vertical" id="gKeys" min="0" max="1.5" step="0.01" value="1"></div>
+        <div class="strip"><label>TT</label><button class="mute" id="xTT">M</button><div class="meter"><i id="mTT"></i></div><input type="range" orient="vertical" id="gTT" min="0" max="1.5" step="0.01" value="1"></div>
+        <div class="strip master"><label>MASTER</label><button class="mute" id="xMaster">M</button><div class="meter"><i id="mMaster"></i></div><input type="range" orient="vertical" id="gMaster" min="0" max="1.5" step="0.01" value="1"></div>
       </div>
     </div>
 
@@ -205,15 +208,21 @@ $MELODY = [
       </div>
     </div>
 
-    <div class="machine xl-skin" style="margin-top:26px">
+    <div class="machine motif-skin" style="margin-top:26px">
       <h3 style="margin:0 0 6px">Play the Keys</h3>
       <div class="key-top">
         <label class="mono muted" style="font-size:.8rem">SOUND</label>
         <select id="voiceSel">
-          <option value="0">Rhodes</option>
-          <option value="1">Chord</option>
-          <option value="2">Stab</option>
-          <option value="3">Bells</option>
+          <option value="0">Grand Piano</option>
+          <option value="1">Rhodes</option>
+          <option value="2">Organ</option>
+          <option value="3">Clav</option>
+          <option value="4">Chord</option>
+          <option value="5">Stab</option>
+          <option value="6">Bells</option>
+          <option value="7">Synth Lead</option>
+          <option value="8">Soul Chop</option>
+          <option value="9">Duster Pad</option>
         </select>
         <label class="mono muted" style="font-size:.8rem;margin-left:14px">OCTAVE</label>
         <button class="btn ghost sm" id="octDown">−</button>
@@ -227,6 +236,23 @@ $MELODY = [
       </div>
       <p class="muted" style="text-align:center;margin-top:10px;font-size:.85rem">Tap the keys to play — switch the sound above.</p>
     </div>
+
+    <div class="machine xl-skin" style="margin-top:26px">
+      <h3 style="margin:0 0 6px">FX Rack</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:16px">Reverb &amp; delay on the keys — flip one on, then dial in the mix.</p>
+      <div class="comp-rack">
+        <div class="comp-strip">
+          <div class="comp-head"><span>REVERB</span><button class="btn ghost sm comp-on off" id="fxRevOn" data-target="rev">OFF</button></div>
+          <div class="comp-row"><label>MIX</label><input type="range" id="fx-rev-mix" min="0" max="100" value="35"><b class="mono" id="fx-rev-mixv">35%</b></div>
+        </div>
+        <div class="comp-strip">
+          <div class="comp-head"><span>DELAY</span><button class="btn ghost sm comp-on off" id="fxDlyOn" data-target="dly">OFF</button></div>
+          <div class="comp-row"><label>TIME</label><input type="range" id="fx-dly-time" min="60" max="500" value="280"><b class="mono" id="fx-dly-timev">280ms</b></div>
+          <div class="comp-row"><label>FEEDBACK</label><input type="range" id="fx-dly-fb" min="0" max="70" value="35"><b class="mono" id="fx-dly-fbv">35%</b></div>
+          <div class="comp-row"><label>MIX</label><input type="range" id="fx-dly-mix" min="0" max="100" value="30"><b class="mono" id="fx-dly-mixv">30%</b></div>
+        </div>
+      </div>
+    </div>
     </div>
   </div>
 </section>
@@ -236,6 +262,8 @@ $MELODY = [
 var AC=null, master=null, ready=false, curBank=0;
 var drumGain=null, melodyGain=null, keysGain=null, ttGain=null;
 var drumComp=null, drumMakeup=null, masterComp=null, masterMakeup=null;
+var keysRevSend=null, keysConv=null, keysRevWet=null;
+var keysDlySend=null, keysDelay=null, keysDlyFb=null, keysDlyWet=null;
 var masterAn=null, drumAn=null, melodyAn=null, keysAn=null, ttAn=null;
 var buffers=[new Array(16), new Array(16)]; // [0]=drums, [1]=soul melody
 var KITS=[{dir:'drums',done:0,total:16},{dir:'melody',done:0,total:16}];
@@ -252,6 +280,19 @@ function ctx(){
     drumGain.connect(drumComp); drumComp.connect(drumMakeup); drumMakeup.connect(master);
 
     melodyGain.connect(master); keysGain.connect(master); ttGain.connect(master);
+
+    // keys FX: reverb (convolver) + delay (feedback), both off (0 send) until toggled on
+    keysRevSend=AC.createGain(); keysRevSend.gain.value=0;
+    keysConv=AC.createConvolver(); keysConv.buffer=makeImpulse(AC,2.2,2.5);
+    keysRevWet=AC.createGain(); keysRevWet.gain.value=0.5;
+    keysGain.connect(keysRevSend); keysRevSend.connect(keysConv); keysConv.connect(keysRevWet); keysRevWet.connect(master);
+
+    keysDlySend=AC.createGain(); keysDlySend.gain.value=0;
+    keysDelay=AC.createDelay(1.0); keysDelay.delayTime.value=0.28;
+    keysDlyFb=AC.createGain(); keysDlyFb.gain.value=0.35;
+    keysDlyWet=AC.createGain(); keysDlyWet.gain.value=0.5;
+    keysGain.connect(keysDlySend); keysDlySend.connect(keysDelay); keysDelay.connect(keysDlyFb); keysDlyFb.connect(keysDelay);
+    keysDelay.connect(keysDlyWet); keysDlyWet.connect(master);
 
     // master bus (SSL-style glue) compressor
     masterComp=AC.createDynamicsCompressor(); masterComp.threshold.value=-12; masterComp.knee.value=6; masterComp.ratio.value=3; masterComp.attack.value=0.01; masterComp.release.value=0.3;
@@ -297,6 +338,9 @@ function startCompMeters(){ function loop(){
 
 // ---- fallback synth (used only if a sample fails to load) ----
 var _nb=null; function noise(){ if(_nb) return _nb; var c=ctx(),b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0); for(var i=0;i<d.length;i++) d[i]=Math.random()*2-1; _nb=b; return b; }
+function makeImpulse(c,seconds,decay){ var rate=c.sampleRate,len=Math.floor(rate*seconds),buf=c.createBuffer(2,len,rate);
+  for(var ch=0;ch<2;ch++){ var d=buf.getChannelData(ch); for(var i=0;i<len;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay); } }
+  return buf; }
 function synth(i,t){ var c=ctx(); if(i===2||i===3||i===5||i===6||i===7||i===10||i===11){ var s=c.createBufferSource(); s.buffer=noise(); var g=c.createGain(),f=c.createBiquadFilter(); f.type='highpass'; f.frequency.value=(i===2||i===3||i===10)?1200:7000; var dur=(i===6)?0.3:0.05; g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur); s.connect(f).connect(g).connect(drumGain); s.start(t); s.stop(t+dur+0.05); } else { var o=c.createOscillator(),g2=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(45,t+0.4); g2.gain.setValueAtTime(1,t); g2.gain.exponentialRampToValueAtTime(0.001,t+0.5); o.connect(g2).connect(drumGain); o.start(t); o.stop(t+0.55); } }
 
 // ---- auto-BPM: estimate a melody loop's native tempo from its raw duration ----
@@ -665,18 +709,52 @@ bindMute('xKeys','gKeys',function(){return keysGain;});
 bindMute('xTT','gTT',function(){return ttGain;});
 bindMute('xMaster','gMaster',function(){return master;});
 
-// ---- keyboard: pitch-shifted one-shots, switchable voice, switchable octave ----
-var VOICE_IDX=[11,12,13,14]; // melody bank indices: Rhodes stab, Chord shot, Stab, Bells
+// ---- keyboard: pitch-shifted one-shots + a couple of live-synthesized voices, switchable octave ----
+var VOICES=[
+  {name:'Grand Piano', type:'sample', idx:4},   // PIANO LP
+  {name:'Rhodes',      type:'sample', idx:11},
+  {name:'Organ',       type:'synth',  synth:'organ'},
+  {name:'Clav',        type:'synth',  synth:'clav'},
+  {name:'Chord',       type:'sample', idx:12},
+  {name:'Stab',        type:'sample', idx:13},
+  {name:'Bells',       type:'sample', idx:14},
+  {name:'Synth Lead',  type:'sample', idx:5},   // SYNTH LP
+  {name:'Soul Chop',   type:'sample', idx:0},   // CREAM
+  {name:'Duster Pad',  type:'sample', idx:15}   // DUSTER
+];
 var curVoice=0, octave=0;
 document.getElementById('voiceSel').addEventListener('change',function(){ curVoice=+this.value; });
 function setOctave(o){ octave=Math.max(-2,Math.min(2,o)); document.getElementById('octLbl').textContent='OCT '+(octave>0?'+':'')+octave; }
 document.getElementById('octUp').addEventListener('click',function(){ setOctave(octave+1); });
 document.getElementById('octDown').addEventListener('click',function(){ setOctave(octave-1); });
+function playSynthVoice(type,freq,t){
+  var c=AC;
+  if(type==='organ'){
+    var g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.5,t+0.01); g.gain.setTargetAtTime(0.0001,t+0.3,0.28);
+    [1,2,3,4].forEach(function(h,i){
+      var o=c.createOscillator(); o.type='sine'; o.frequency.value=freq*h;
+      var og=c.createGain(); og.gain.value=[0.6,0.3,0.18,0.1][i];
+      o.connect(og).connect(g); o.start(t); o.stop(t+1.3);
+    });
+    g.connect(keysGain);
+  } else if(type==='clav'){
+    var o=c.createOscillator(); o.type='sawtooth'; o.frequency.value=freq;
+    var f=c.createBiquadFilter(); f.type='bandpass'; f.frequency.value=freq*3; f.Q.value=6;
+    var g=c.createGain(); g.gain.setValueAtTime(0.7,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.28);
+    o.connect(f).connect(g).connect(keysGain); o.start(t); o.stop(t+0.32);
+  }
+}
 function playKey(semi,el){
-  var idx=VOICE_IDX[curVoice]; var buf=buffers[1][idx];
-  if(!buf){ setStatus('still loading…'); return; }
-  ctx(); var s=AC.createBufferSource(); s.buffer=buf; s.playbackRate.value=Math.pow(2,(semi+octave*12)/12);
-  var g=AC.createGain(); g.gain.value=1; s.connect(g).connect(keysGain); s.start(0);
+  var v=VOICES[curVoice]; ctx();
+  if(v.type==='sample'){
+    var buf=buffers[1][v.idx];
+    if(!buf){ setStatus('still loading…'); return; }
+    var s=AC.createBufferSource(); s.buffer=buf; s.playbackRate.value=Math.pow(2,(semi+octave*12)/12);
+    var g=AC.createGain(); g.gain.value=1; s.connect(g).connect(keysGain); s.start(0);
+  } else {
+    var freq=261.63*Math.pow(2,(semi+octave*12)/12); // C4 reference
+    playSynthVoice(v.synth,freq,AC.currentTime);
+  }
   if(el){ el.classList.add('active'); setTimeout(function(){ el.classList.remove('active'); },160); }
 }
 [].slice.call(document.querySelectorAll('.key')).forEach(function(el){
@@ -717,6 +795,30 @@ function bindCompToggle(btnId,updFn){
 }
 bindCompToggle('compDrumOn',function(){ updDrumComp(); });
 bindCompToggle('compMasterOn',function(){ updMasterComp(); });
+
+// ---- FX rack: reverb + delay sends on the keys bus ----
+var fxRevBtn=document.getElementById('fxRevOn'), fxDlyBtn=document.getElementById('fxDlyOn');
+function updRev(){
+  ctx();
+  var mix=+document.getElementById('fx-rev-mix').value;
+  document.getElementById('fx-rev-mixv').textContent=mix+'%';
+  var on=!fxRevBtn.classList.contains('off');
+  keysRevSend.gain.value = on ? mix/100 : 0;
+}
+function updDly(){
+  ctx();
+  var time=+document.getElementById('fx-dly-time').value, fb=+document.getElementById('fx-dly-fb').value, mix=+document.getElementById('fx-dly-mix').value;
+  document.getElementById('fx-dly-timev').textContent=time+'ms';
+  document.getElementById('fx-dly-fbv').textContent=fb+'%';
+  document.getElementById('fx-dly-mixv').textContent=mix+'%';
+  keysDelay.delayTime.value=time/1000; keysDlyFb.gain.value=fb/100;
+  var on=!fxDlyBtn.classList.contains('off');
+  keysDlySend.gain.value = on ? mix/100 : 0;
+}
+['fx-rev-mix'].forEach(function(id){ document.getElementById(id).addEventListener('input',updRev); });
+['fx-dly-time','fx-dly-fb','fx-dly-mix'].forEach(function(id){ document.getElementById(id).addEventListener('input',updDly); });
+fxRevBtn.addEventListener('click',function(){ fxRevBtn.classList.toggle('off'); fxRevBtn.textContent=fxRevBtn.classList.contains('off')?'OFF':'ON'; updRev(); });
+fxDlyBtn.addEventListener('click',function(){ fxDlyBtn.classList.toggle('off'); fxDlyBtn.textContent=fxDlyBtn.classList.contains('off')?'OFF':'ON'; updDly(); });
 })();
 </script>
 <?php khb_footer(); ?>

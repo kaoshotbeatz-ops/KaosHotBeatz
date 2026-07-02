@@ -332,19 +332,9 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .btn.bank.on{background:var(--gold);color:#000}
 
 /* ===== turntable / mixer / keys ===== */
-.deck-mixer{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start}
-.deck{width:200px;text-align:center}
-.vinyl{width:200px;height:200px;border-radius:50%;margin:0 auto;position:relative;cursor:grab;touch-action:none;
-  background:repeating-radial-gradient(circle at center,#0c0c0e 0 2px,#161619 2px 4px);
-  box-shadow:0 0 0 6px #202024,0 10px 24px rgba(0,0,0,.55)}
-.vinyl:active{cursor:grabbing}
-.vinyl.spin{animation:vspin 2.2s linear infinite}
-@keyframes vspin{to{transform:rotate(360deg)}}
-.vinyl .vlabel{position:absolute;inset:0;margin:auto;width:76px;height:76px;border-radius:50%;background:var(--gold);
-  display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:.72rem;color:#000;text-align:center;
-  box-shadow:0 0 0 3px #000}
+.deck{text-align:center}
 .deck-controls{display:flex;gap:10px;justify-content:center;margin-top:14px}
-.mixer{display:flex;gap:16px;align-items:flex-end;flex:1;min-width:260px}
+.mixer{display:flex;gap:16px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
 .strip{display:flex;flex-direction:column;align-items:center;gap:8px}
 .strip label{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.05em}
 .strip.master label{color:var(--gold)}
@@ -382,19 +372,35 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .grmeter{flex:1;height:12px;background:#0c0c0e;border:2px solid #000;border-radius:5px;overflow:hidden;display:flex;flex-direction:row-reverse}
 .grmeter i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#e11d1d,#ffd152)}
 
-/* tonearm + mixer mute + scratch source */
-.platter-wrap{position:relative;width:200px;height:220px;margin:0 auto}
-.platter-wrap .vinyl{position:absolute;top:10px;left:0}
-.tonearm{position:absolute;top:-6px;right:-34px;width:110px;height:110px;transform-origin:100% 0%;transform:rotate(-26deg);transition:transform .35s ease}
-.tonearm::before{content:"";position:absolute;top:0;right:6px;width:8px;height:8px;border-radius:50%;background:#111;border:2px solid #000}
-.tonearm::after{content:"";position:absolute;top:6px;right:9px;width:4px;height:100px;background:linear-gradient(90deg,#c9c9cf,#8a8a90);border:1px solid #000;border-radius:3px;transform-origin:top center;}
-.tonearm .headshell{position:absolute;top:100px;right:2px;width:16px;height:10px;background:#1a1a1a;border:1px solid #000;border-radius:2px}
-.tonearm.down{transform:rotate(-4deg)}
+/* mixer mute + scratch source */
 .scratch-src{margin-top:12px;text-align:center}
 .scratch-src select{width:auto;padding:6px 10px;font-size:.82rem}
 .strip{position:relative}
 .strip .mute{font-family:var(--mono);font-size:.62rem;font-weight:800;width:22px;height:18px;border-radius:4px;border:2px solid #000;background:#26262b;color:var(--muted);cursor:pointer}
 .strip .mute.on{background:#e11d1d;color:#fff}
+
+/* ===== Mackie-style mixer chassis — charcoal body, aluminum cheeks, blue/red pinstripe ===== */
+.mackie-skin{background:linear-gradient(180deg,#1e1e21,#0e0e10)!important;position:relative;
+  padding-left:30px!important;padding-right:30px!important;border-color:#000!important}
+.mackie-skin::before,.mackie-skin::after{content:"";position:absolute;top:0;bottom:0;width:18px;
+  background:repeating-linear-gradient(180deg,#c4c4ca 0 2px,#9a9aa0 2px 4px,#7a7a80 4px 5px);
+  box-shadow:inset 0 0 8px rgba(0,0,0,.5);border:1px solid #000}
+.mackie-skin::before{left:0;border-radius:14px 0 0 14px}
+.mackie-skin::after{right:0;border-radius:0 14px 14px 0}
+.mackie-skin h3{position:relative;color:#e4e4e8;padding-bottom:8px;
+  border-bottom:2px solid transparent;border-image:linear-gradient(90deg,#2e6ee1,#e11d1d) 1}
+.mackie-skin .strip label{color:#8f8f96}
+.mackie-skin .meter{border-color:#000;background:#050506}
+@media(max-width:600px){.mackie-skin{padding-left:16px!important;padding-right:16px!important}.mackie-skin::before,.mackie-skin::after{width:10px}}
+
+/* ===== Yamaha Motif-style keyboard chassis — deep indigo body, amber accents ===== */
+.motif-skin{background:linear-gradient(180deg,#20213a,#111225)!important;border-color:#000!important}
+.motif-skin h3{color:#f0a94e;letter-spacing:.02em}
+.motif-skin .key-top{color:#c9caea}
+.motif-skin .key-top label{color:#f0a94e!important}
+.motif-skin .key-top select{border-color:#3a3d6b}
+.motif-skin .key{background:linear-gradient(180deg,#f6f3ec,#dcd8cf);box-shadow:0 3px 0 #000,0 0 0 1px #3a3d6b inset}
+.motif-skin .key.sharp{background:linear-gradient(180deg,#26263a,#0c0c16)}
 
 /* panic stop + erase */
 .btn.danger{background:#ff2e2e;color:#fff;border-color:#000}
@@ -412,11 +418,15 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .seq-block{position:absolute;top:2px;width:6px;height:11px;border-radius:2px;background:var(--gold2)}
 .seq-lane.bank1 .seq-block{background:#3ecf8e}
 
-/* ===== realistic direct-drive turntable ===== */
+/* ===== realistic direct-drive turntable — Technics SL-1200 MK2 brushed-silver look ===== */
+.tt-skin{background:linear-gradient(180deg,#232326,#141416)!important;border-color:#000!important}
+.tt-skin h3{color:#dcdce2}
 .plinth{position:relative;width:280px;margin:0 auto;padding:18px;border-radius:10px;
-  background:linear-gradient(160deg,#2c2c30,#141416 60%);border:3px solid #000;
-  box-shadow:0 22px 40px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.06);
+  background:linear-gradient(160deg,#c8c8ce,#8a8a92 45%,#57575e 100%);border:3px solid #000;
+  box-shadow:0 22px 40px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.35),inset 0 -3px 6px rgba(0,0,0,.25);
   display:flex;gap:10px;align-items:flex-start}
+.plinth::after{content:"technics";position:absolute;left:18px;bottom:8px;font-family:var(--disp);
+  font-size:.62rem;letter-spacing:.08em;color:#3a3a40;text-transform:uppercase;opacity:.75}
 .platter-wrap{position:relative;width:180px;height:200px;flex:0 0 180px}
 .vinyl{position:absolute;top:10px;left:0;width:180px;height:180px;border-radius:50%;
   background:repeating-radial-gradient(circle at center,#0a0a0c 0 2px,#161619 2px 4px);
@@ -425,7 +435,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .vinyl.spin{animation:vspin 1.9s linear infinite}
 @keyframes vspin{to{transform:rotate(360deg)}}
 .strobe-ring{position:absolute;inset:-5px;border-radius:50%;
-  background:repeating-conic-gradient(#e11d1d 0 4deg,transparent 4deg 12deg);
+  background:repeating-conic-gradient(#d9d9dc 0 4deg,transparent 4deg 12deg);
   -webkit-mask:radial-gradient(circle,transparent 96%,#000 97%,#000 100%,transparent 101%);
   mask:radial-gradient(circle,transparent 96%,#000 97%,#000 100%,transparent 101%);opacity:.85}
 .vinyl .vlabel{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:var(--gold);
@@ -442,13 +452,13 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .vinyl.spin ~ .cue-light,.tonearm.down ~ .cue-light{background:#ff2e2e;box-shadow:0 0 8px #ff2e2e,0 0 0 2px #000}
 .deck-side{display:flex;flex-direction:column;align-items:center;gap:14px;flex:1}
 .pitch-block{display:flex;flex-direction:column;align-items:center;gap:6px}
-.pitch-block label{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.05em}
-.pitch-track{background:#0c0c0e;border:2px solid #000;border-radius:5px;padding:6px 4px}
-.pitch-track input[type=range]{-webkit-appearance:slider-vertical;appearance:slider-vertical;width:20px;height:100px}
-#pitchVal{font-family:var(--mono);font-size:.7rem;color:var(--gold2)}
-.startstop{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#3a3a40,#141416 70%);
-  border:3px solid #000;color:#cfcbc2;font-family:var(--disp);font-size:.6rem;letter-spacing:.03em;line-height:1.1;
-  cursor:pointer;box-shadow:0 6px 0 #000,inset 0 2px 0 rgba(255,255,255,.08)}
+.pitch-block label{font-family:var(--mono);font-size:.6rem;color:#3a3a40;letter-spacing:.05em}
+.pitch-track{background:#0c0c0e;border:2px solid #000;border-radius:5px;padding:6px 4px;box-shadow:inset 0 0 0 1px #2e6ee1}
+.pitch-track input[type=range]{-webkit-appearance:slider-vertical;appearance:slider-vertical;width:20px;height:100px;accent-color:#2e6ee1}
+#pitchVal{font-family:var(--mono);font-size:.7rem;color:#4f8dff}
+.startstop{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e4e4e8,#9a9aa0 70%);
+  border:3px solid #000;color:#141416;font-family:var(--disp);font-size:.6rem;letter-spacing:.03em;line-height:1.1;
+  cursor:pointer;box-shadow:0 6px 0 #000,inset 0 2px 0 rgba(255,255,255,.5)}
 .startstop:active{box-shadow:0 3px 0 #000;transform:translateY(3px)}
 .ss-light{display:block;width:6px;height:6px;border-radius:50%;background:#3a0a0a;margin:0 auto 6px;box-shadow:0 0 0 1px #000}
 .ss-light.on{background:#3ecf8e;box-shadow:0 0 6px #3ecf8e,0 0 0 1px #000}

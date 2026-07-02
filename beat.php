@@ -46,6 +46,9 @@ khb_header($beat['title'], 'beats.php');
         <p class="muted" style="font-size:.82rem">Instant download after checkout. See full <a href="/licensing.php">licensing terms</a>.</p>
         <p style="margin-top:6px"><a class="suno-cta" href="<?= h(BEATSTARS_URL) ?>" target="_blank" rel="noopener" style="font-size:.85rem;padding:8px 14px">⭐ Prefer BeatStars? Buy there ↗</a></p>
         <p style="margin-top:10px"><a class="btn sm" href="/clip.php?id=<?= h($beat['id']) ?>" target="_blank">🎬 Make a 30s video clip</a></p>
+        <?php if (is_dir(__DIR__ . '/assets/stems/' . basename($beat['id']))): ?>
+        <p style="margin-top:10px"><a class="btn sm" href="/stems.php?id=<?= h($beat['id']) ?>">🎚️ Go inside — mix the stems</a></p>
+        <?php endif; ?>
       </div>
     </div>
   </div>
