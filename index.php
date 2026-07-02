@@ -7,7 +7,7 @@ $music = array_slice(suno_tracks(), 0, 3);
 $tiers = license_tiers();
 khb_header('Original Beats & Studio Sessions', '');
 ?>
-<section class="hero split">
+<section class="hero split brick">
   <div class="wrap">
     <div>
       <p class="kicker"><?= h(ARTIST_TAGLINE) ?></p>
@@ -34,6 +34,8 @@ khb_header('Original Beats & Studio Sessions', '');
   </div>
 </section>
 
+<span class="drip"><svg viewBox="0 0 1200 34" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path fill="#ffb400" d="M0 0h1200v10c-40 0-40 18-80 18s-40-12-80-12-40 20-80 20-40-16-80-16-40 10-80 10-40-18-80-18-40 16-80 16-40-14-80-14-40 20-80 20-40-18-80-18-40 12-80 12-40-16-80-16-40 14-80 14-40-10-80-10V0z"/><circle cx="150" cy="30" r="3" fill="#ffb400"/><circle cx="620" cy="33" r="2.5" fill="#ffb400"/><circle cx="980" cy="31" r="3" fill="#ffb400"/></svg></span>
+
 <div class="stats"><div class="wrap">
   <div class="stat"><div class="num"><?= h(STAT_PLAYS) ?></div><div class="lbl">Plays</div></div>
   <div class="stat"><div class="num"><?= h(STAT_SONGS) ?></div><div class="lbl">Records</div></div>
@@ -44,6 +46,39 @@ khb_header('Original Beats & Studio Sessions', '');
 <div class="marquee"><div class="track">
   <?php $g = str_repeat('<span><em>◆</em> Soul <em>◆</em> Hip-Hop <em>◆</em> Boom Bap <em>◆</em> Raw <em>◆</em> Gospel </span>', 2); echo $g; ?>
 </div></div>
+
+<section class="gfx-strip">
+  <div class="wrap">
+    <p class="ey">The Culture</p>
+    <h2>Street · Soul · Hip-Hop</h2>
+    <div class="gfx-row">
+      <div class="gfx-icon">
+        <svg viewBox="0 0 64 64"><rect class="st" x="4" y="10" width="56" height="44" rx="4"/><circle class="st" cx="27" cy="32" r="16"/><circle class="fl" cx="27" cy="32" r="4"/><line class="st" x1="53" y1="14" x2="38" y2="26"/><rect class="st" x="43" y="45" width="13" height="4" rx="2"/></svg>
+        <div class="cap">Turntables</div>
+      </div>
+      <div class="gfx-icon">
+        <svg viewBox="0 0 64 64"><rect class="st" x="8" y="8" width="48" height="48" rx="4"/><rect class="fl" x="16" y="18" width="8" height="8" rx="1"/><rect class="fl" x="28" y="18" width="8" height="8" rx="1"/><rect class="fl" x="40" y="18" width="8" height="8" rx="1"/><rect class="fl" x="16" y="30" width="8" height="8" rx="1"/><rect class="fl" x="28" y="30" width="8" height="8" rx="1"/><rect class="fl" x="40" y="30" width="8" height="8" rx="1"/><rect class="fl" x="16" y="42" width="8" height="8" rx="1"/><rect class="fl" x="28" y="42" width="8" height="8" rx="1"/><rect class="fl" x="40" y="42" width="8" height="8" rx="1"/></svg>
+        <div class="cap">MPC 2000XL</div>
+      </div>
+      <div class="gfx-icon">
+        <svg viewBox="0 0 64 64"><path class="st" d="M18 18a16 9 0 0 1 28 0"/><rect class="st" x="5" y="18" width="54" height="34" rx="4"/><circle class="st" cx="20" cy="36" r="8"/><circle class="st" cx="44" cy="36" r="8"/><rect class="fl" x="29" y="23" width="6" height="4" rx="1"/></svg>
+        <div class="cap">Boombox</div>
+      </div>
+      <div class="gfx-icon">
+        <svg viewBox="0 0 64 64"><rect class="st" x="22" y="18" width="20" height="38" rx="4"/><rect class="st" x="26" y="10" width="12" height="8" rx="2"/><rect class="fl" x="30" y="4" width="4" height="6" rx="1"/><circle class="fl" cx="50" cy="8" r="2"/><circle class="fl" cx="55" cy="14" r="1.6"/><circle class="fl" cx="49" cy="16" r="1.4"/></svg>
+        <div class="cap">Spray Cans</div>
+      </div>
+      <div class="gfx-icon">
+        <svg viewBox="0 0 64 64"><rect class="st" x="6" y="16" width="52" height="32" rx="4"/><rect class="st" x="14" y="22" width="36" height="11" rx="2"/><circle class="fl" cx="24" cy="27" r="3"/><circle class="fl" cx="40" cy="27" r="3"/><line class="st" x1="18" y1="42" x2="46" y2="42"/></svg>
+        <div class="cap">Cassette</div>
+      </div>
+      <div class="gfx-icon">
+        <svg viewBox="0 0 64 64"><rect class="st" x="24" y="6" width="16" height="30" rx="8"/><line class="st" x1="25" y1="16" x2="39" y2="16"/><line class="st" x1="25" y1="24" x2="39" y2="24"/><path class="st" d="M18 30a14 14 0 0 0 28 0"/><line class="st" x1="32" y1="44" x2="32" y2="54"/><line class="st" x1="22" y1="54" x2="42" y2="54"/></svg>
+        <div class="cap">The Mic</div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <?php if ($music): ?>
 <section>
