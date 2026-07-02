@@ -8,6 +8,7 @@ function khb_header($title, $active = '') {
     $nav = [
         'listen.php'  => 'Listen',
         'beats.php'   => 'Beats',
+        'studio.php'  => 'The Lab',
         'book.php'    => 'Book',
         'about.php'   => 'The Collection',
         'contact.php' => 'Contact',
