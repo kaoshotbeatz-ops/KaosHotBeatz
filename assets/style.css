@@ -293,25 +293,39 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .hero.photo h1{max-width:16ch}
 .hero.photo .lead{max-width:46ch}
 
-/* ===== KaosXL skin — BAP-2KXL colorway (grey chassis, green phosphor LCD) ===== */
-.xl-skin{background:linear-gradient(180deg,#5c5c58,#3c3c38)!important;position:relative}
-.xl-lcd{position:relative;overflow:hidden;background:#7da642;border:3px solid #1a1a18;border-radius:8px;
-  padding:14px 16px;margin-bottom:16px;box-shadow:inset 0 3px 10px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.15)}
+/* ===== Vintage drum-machine chassis — dark panel, wood-grain cheeks, red LED readout ===== */
+.xl-skin{background:linear-gradient(180deg,#26221e,#14110f)!important;position:relative;
+  padding-left:34px!important;padding-right:34px!important;border-color:#000!important}
+.xl-skin::before,.xl-skin::after{content:"";position:absolute;top:0;bottom:0;width:22px;
+  background:repeating-linear-gradient(180deg,#5a3a22 0 3px,#6b4527 3px 7px,#4a2f1b 7px 9px);
+  box-shadow:inset 0 0 8px rgba(0,0,0,.6);border:1px solid #000}
+.xl-skin::before{left:0;border-radius:14px 0 0 14px}
+.xl-skin::after{right:0;border-radius:0 14px 14px 0}
+.xl-lcd{position:relative;overflow:hidden;background:#160505;border:3px solid #000;border-radius:8px;
+  padding:14px 16px;margin-bottom:16px;box-shadow:inset 0 3px 10px rgba(0,0,0,.7),0 2px 0 rgba(255,255,255,.08)}
 .xl-lcd-scan{position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(0deg,rgba(30,42,18,.14) 0 2px,transparent 2px 4px);mix-blend-mode:multiply}
+  background:repeating-linear-gradient(0deg,rgba(255,40,40,.05) 0 2px,transparent 2px 4px);mix-blend-mode:screen}
 .xl-lcd-row1{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
-.xl-brand{font-family:var(--disp);color:#1e2a12;font-size:1rem;letter-spacing:.04em}
+.xl-brand{font-family:var(--disp);color:#ff3a3a;font-size:1rem;letter-spacing:.04em;text-shadow:0 0 6px rgba(255,58,58,.6)}
 .xl-brand em{font-style:normal;opacity:.6}
-.xl-dot{width:8px;height:8px;border-radius:50%;background:#1e2a12;box-shadow:0 0 6px rgba(30,42,18,.6);animation:xlblink 1.4s steps(1) infinite}
+.xl-qtz{color:#ff8a72!important}
+.xl-dot{width:8px;height:8px;border-radius:50%;background:#ff2a2a;box-shadow:0 0 8px rgba(255,42,42,.8);animation:xlblink 1.4s steps(1) infinite}
 @keyframes xlblink{50%{opacity:.15}}
 .xl-lcd-big{display:flex;align-items:baseline;gap:8px;position:relative;z-index:1;margin-top:6px}
-.xl-lcd-big #lcdBpm{font-family:var(--mono);font-weight:800;font-size:2.1rem;color:#1e2a12;letter-spacing:.03em}
-.xl-lcd-big small{font-family:var(--disp);color:#2b3a1a;font-size:.7rem;opacity:.75}
-.xl-lcd-big #lcdBar{margin-left:auto;font-family:var(--mono);font-weight:700;font-size:1.3rem;color:#2b3a1a;opacity:.85}
-.xl-lcd-status{position:relative;z-index:1;margin-top:6px;font-family:var(--mono);color:#1e2a12;font-size:.78rem;
-  letter-spacing:.06em;text-transform:uppercase;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xl-lcd-big #lcdBpm{font-family:var(--mono);font-weight:800;font-size:2.1rem;color:#ff3a3a;letter-spacing:.03em;text-shadow:0 0 8px rgba(255,58,58,.6)}
+.xl-lcd-big small{font-family:var(--disp);color:#c95050;font-size:.7rem;opacity:.85}
+.xl-lcd-big #lcdBar{margin-left:auto;font-family:var(--mono);font-weight:700;font-size:1.3rem;color:#ff6b5a;opacity:.9}
+.xl-lcd-status{position:relative;z-index:1;margin-top:6px;font-family:var(--mono);color:#ff8a72;font-size:.78rem;
+  letter-spacing:.06em;text-transform:uppercase;opacity:.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .xl-skin .lab-top .live{color:#d8d8d2}
-.xl-skin .btn.ghost{border-color:#1a1a18;color:#e8e8e2}
+.xl-skin .btn.ghost{border-color:#000;color:#e8e8e2}
+.xl-scope{background:#160505!important}
+.xl-skin .pad{background:linear-gradient(180deg,#8a3a2a,#5a1f16)!important;border-radius:4px!important;border-color:#000!important;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.12),0 4px 0 #000!important}
+.xl-skin .pad .nm{color:#f4e8dc!important;font-weight:800}
+.xl-skin .pad .k{color:#d4a088!important}
+.xl-skin .pad.hit{background:linear-gradient(180deg,var(--gold2),var(--gold))!important}
+@media(max-width:600px){.xl-skin{padding-left:18px!important;padding-right:18px!important}.xl-skin::before,.xl-skin::after{width:12px}}
 
 /* bank switch row (drums / soul melody) */
 .bank-row{display:flex;align-items:center;gap:10px;margin:6px 0 14px;flex-wrap:wrap}
