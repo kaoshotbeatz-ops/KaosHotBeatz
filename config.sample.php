@@ -3,7 +3,7 @@
 // config.php is git-ignored and never uploaded to source control.
 
 define('SITE_NAME',  'KAOS HOT BEATZ');
-define('SITE_EMAIL', 'beats@kaoshotbeatz.com');   // where sales/booking notices go
+define('SITE_EMAIL', 'kaoshotbeatz@gmail.com');   // where sales/booking notices go
 
 // Artist identity (shown across the site)
 define('ARTIST_TAGLINE', 'NY · Long Island Hip-Hop Producer');

@@ -17,7 +17,7 @@ $__cfg = __DIR__ . '/config.php';
 if (file_exists($__cfg)) require $__cfg;
 // Fallbacks so the site runs before config.php is created.
 if (!defined('SITE_NAME'))     define('SITE_NAME', 'KAOS HOT BEATZ');
-if (!defined('SITE_EMAIL'))    define('SITE_EMAIL', 'beats@kaoshotbeatz.com');
+if (!defined('SITE_EMAIL'))    define('SITE_EMAIL', 'kaoshotbeatz@gmail.com');
 if (!defined('PAYPAL_ENV'))    define('PAYPAL_ENV', 'sandbox');          // sandbox | live
 if (!defined('PAYPAL_CLIENT')) define('PAYPAL_CLIENT', '');              // set in config.php
 if (!defined('PAYPAL_SECRET')) define('PAYPAL_SECRET', '');              // set in config.php
