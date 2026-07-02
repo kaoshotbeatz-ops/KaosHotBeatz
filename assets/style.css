@@ -439,3 +439,21 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .ss-light{display:block;width:6px;height:6px;border-radius:50%;background:#3a0a0a;margin:0 auto 6px;box-shadow:0 0 0 1px #000}
 .ss-light.on{background:#3ecf8e;box-shadow:0 0 6px #3ecf8e,0 0 0 1px #000}
 @media(max-width:480px){.plinth{width:100%;padding:12px}.platter-wrap{width:150px;flex-basis:150px}.vinyl{width:150px;height:150px}.tonearm{width:110px;height:126px}.tonearm .arm-tube{height:96px}.tonearm .headshell{top:96px}}
+
+/* landscape: instruments line up side-by-side, scroll horizontally instead of stacking */
+@media (orientation: landscape) and (max-width: 1100px){
+  .instruments-row{display:flex;flex-direction:row;flex-wrap:nowrap;gap:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    padding-bottom:14px;max-width:100%;scroll-snap-type:x proximity}
+  .instruments-row > .machine{flex:0 0 min(92vw,440px);margin-top:0 !important;scroll-snap-align:start}
+  .instruments-row > p.muted{flex:0 0 220px;font-size:.72rem;display:flex;align-items:center}
+  .lab{max-width:100%}
+}
+
+/* count-in toggle (pill switch) + tighter transport row for touch/mobile */
+.lab-top{row-gap:8px}
+.switch-pill{display:inline-flex;align-items:center;gap:6px;background:#0c0c0e;border:2px solid #000;border-radius:20px;padding:4px 10px 4px 4px;cursor:pointer;user-select:none}
+.switch-pill .dot{width:16px;height:16px;border-radius:50%;background:#3a3a40;transition:.15s}
+.switch-pill.on .dot{background:var(--gold)}
+.switch-pill span{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.03em}
+.btn.overdub{background:#1c1c1f;color:var(--gold2);border-color:#000}
+.btn.overdub.on{background:#ffd152;color:#000;animation:pulse .8s infinite}

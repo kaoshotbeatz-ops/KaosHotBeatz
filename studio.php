@@ -45,7 +45,8 @@ $MELODY = [
   <div class="wrap lab">
     <p class="ey">The Lab</p>
     <h2>MPC Drum Machine</h2>
-    <p class="muted">Real KAOS drum kit. Tap the pads. Hit <strong>REC</strong>, finger-drum a loop, then <strong>PLAY</strong> — you made a beat. Works on iPad &amp; phone (turn the ringer up / unmute).</p>
+    <p class="muted">Real KAOS drum kit. Tap the pads. Hit <strong>REC</strong>, finger-drum a loop, then <strong>PLAY</strong> — you made a beat. Works on iPad &amp; phone (turn the ringer up / unmute). Rotate to landscape and the instruments line up side by side.</p>
+    <div class="instruments-row" id="instrumentsRow">
 
     <div class="machine xl-skin">
       <div id="unlock"><div class="p">▶</div><div class="t" id="unlockTxt">Tap to load the kit</div></div>
@@ -63,11 +64,13 @@ $MELODY = [
       </div>
       <div class="lab-top">
         <button class="btn sm rec" id="rec">● REC</button>
+        <button class="btn ghost sm overdub" id="overdub">◐ OVERDUB</button>
         <button class="btn ghost sm" id="play">▶ PLAY</button>
         <button class="btn ghost sm" id="stop">■ STOP</button>
         <button class="btn ghost sm" id="clear">CLEAR</button>
         <button class="btn sm danger" id="panic">⏹⏹ DOUBLE STOP</button>
         <button class="btn ghost sm erase" id="erase">⌫ ERASE (hold + tap pad)</button>
+        <div class="switch-pill on" id="countInToggle"><span class="dot"></span><span>COUNT-IN</span></div>
         <span class="bpm">BPM <input type="range" id="bpm" min="60" max="150" value="90"><b id="bpmv" class="mono">90</b></span>
         <button class="btn ghost sm" id="tapTempo">TAP</button>
         <span class="live" id="status">load the kit ↑</span>
@@ -223,6 +226,7 @@ $MELODY = [
         <?php endforeach; ?>
       </div>
       <p class="muted" style="text-align:center;margin-top:10px;font-size:.85rem">Tap the keys to play — switch the sound above.</p>
+    </div>
     </div>
   </div>
 </section>
@@ -413,7 +417,7 @@ document.getElementById('panic').addEventListener('click',function(){
   master.gain.cancelScheduledValues(now);
   master.gain.setValueAtTime(0,now);
   master.gain.setValueAtTime(+document.getElementById('gMaster').value, now+0.03);
-  stopPlay(); recording=false; document.getElementById('rec').classList.remove('on');
+  stopPlay(); recording=false; if(typeof armed==='function') armed(null); else document.getElementById('rec').classList.remove('on');
   if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; }
   if(ttScratchSrc){ try{ttScratchSrc.stop();}catch(e){} }
   vinylEl.classList.remove('spin'); armUp();
@@ -495,20 +499,39 @@ function startPlay(){
     progRAF=requestAnimationFrame(tick); } tick();
 }
 function stopPlay(){ playing=false; counting=false; if(schedTimer){ clearInterval(schedTimer); schedTimer=null; } loopTimers.forEach(clearTimeout); loopTimers=[]; if(progRAF) cancelAnimationFrame(progRAF); document.getElementById('prog').style.width='0'; }
-document.getElementById('rec').addEventListener('click',function(){
+// ---- count-in on/off ----
+var countInEnabled=true;
+var countInToggle=document.getElementById('countInToggle');
+countInToggle.addEventListener('click',function(){ countInEnabled=!countInEnabled; countInToggle.classList.toggle('on',countInEnabled); });
+function maybeCountIn(cb){ if(countInEnabled) countIn(cb); else cb(); }
+
+var recBtn=document.getElementById('rec'), overdubBtn=document.getElementById('overdub');
+function armed(btn){ [recBtn,overdubBtn].forEach(function(b){ b.classList.toggle('on', b===btn); }); }
+recBtn.addEventListener('click',function(){
   if(counting) return;
-  if(recording){ recording=false; this.classList.remove('on'); setStatus('recorded '+events.length+' hits'); return; }
-  this.classList.add('on');
-  if(!playing) events=[];
-  countIn(function(){ recording=true; recStart=ctx().currentTime; setStatus('recording — 4 bars, drum it!'); startPlay(); });
+  if(recording){ recording=false; armed(null); setStatus('recorded '+events.length+' hits'); return; }
+  armed(recBtn); events=[]; renderSeq();
+  maybeCountIn(function(){ recording=true; recStart=ctx().currentTime; setStatus('recording — 4 bars, drum it!'); startPlay(); });
+});
+overdubBtn.addEventListener('click',function(){
+  if(counting) return;
+  if(recording){ recording=false; armed(null); setStatus('recorded '+events.length+' hits'); return; }
+  armed(overdubBtn);
+  var wasPlaying=playing;
+  maybeCountIn(function(){
+    recording=true;
+    recStart = wasPlaying ? start0 : ctx().currentTime; // keep new hits phase-locked to the pattern already playing
+    setStatus('overdubbing — layer on top, existing pattern stays');
+    startPlay();
+  });
 });
 document.getElementById('play').addEventListener('click',function(){
   if(counting) return;
   if(!events.length){ setStatus('record something first'); return;}
-  stopPlay(); countIn(function(){ startPlay(); setStatus('looping your 4-bar beat'); });
+  stopPlay(); maybeCountIn(function(){ startPlay(); setStatus('looping your '+BARS+'-bar beat'); });
 });
-document.getElementById('stop').addEventListener('click',function(){ stopPlay(); recording=false; document.getElementById('rec').classList.remove('on'); setStatus('stopped'); });
-document.getElementById('clear').addEventListener('click',function(){ stopPlay(); events=[]; recording=false; document.getElementById('rec').classList.remove('on'); setStatus('cleared'); renderSeq(); });
+document.getElementById('stop').addEventListener('click',function(){ stopPlay(); recording=false; armed(null); setStatus('stopped'); });
+document.getElementById('clear').addEventListener('click',function(){ stopPlay(); events=[]; recording=false; armed(null); setStatus('cleared'); renderSeq(); });
 document.getElementById('bpm').addEventListener('input',function(){ bpm=+this.value; document.getElementById('bpmv').textContent=bpm; var lb=document.getElementById('lcdBpm'); if(lb) lb.textContent=(bpm<100?'0':'')+bpm; });
 document.getElementById('lcdBpm').textContent='090';
 
