@@ -11,7 +11,7 @@ khb_header('Original Beats & Studio Sessions', '');
   <div class="wrap">
     <div>
       <p class="kicker"><?= h(ARTIST_TAGLINE) ?></p>
-      <h1>KAOS<br><span style="color:var(--amber)">Hot Beatz</span></h1>
+      <h1>KAOS<span class="out">Hot Beatz</span></h1>
       <p class="lead">Soul-sampled, MPC-swung boom bap out of Long Island. <?= h(STAT_PLAYS) ?> plays and counting. Stream the catalog, lease a beat, or book studio time and we cook one from scratch.</p>
       <div class="hero-actions">
         <a class="btn" href="/listen.php">▶ Listen</a>
@@ -25,7 +25,12 @@ khb_header('Original Beats & Studio Sessions', '');
         <span class="wave" aria-hidden="true"><?php for($i=0;$i<14;$i++) echo '<i></i>'; ?></span>
       </div>
     </div>
-    <div class="vinyl"><span class="label">KAOS<br>HOT<br>BEATZ</span></div>
+    <div class="tt">
+      <div class="platter"><span class="lbl">KAOS<br>HOT<br>BEATZ</span></div>
+      <div class="arm"></div>
+      <div class="fader"></div>
+      <span class="badge">SL-1200 MK2</span>
+    </div>
   </div>
 </section>
 
