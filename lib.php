@@ -26,6 +26,7 @@ if (!defined('ARTIST_TAGLINE'))define('ARTIST_TAGLINE', 'NY · Long Island Hip-H
 if (!defined('ARTIST_GENRES')) define('ARTIST_GENRES', 'Soul · Hip-Hop · Boom Bap · Raw · Gospel');
 if (!defined('SUNO_URL'))       define('SUNO_URL', 'https://suno.com/@kaoshotbeatz');
 if (!defined('INSTAGRAM_URL'))  define('INSTAGRAM_URL', 'https://instagram.com/kaoshotbeatz');
+if (!defined('BEATSTARS_URL'))  define('BEATSTARS_URL', 'https://www.beatstars.com/kaoshotbeatz');
 if (!defined('STAT_PLAYS'))     define('STAT_PLAYS', '36K+');
 if (!defined('STAT_SONGS'))     define('STAT_SONGS', '25+');
 

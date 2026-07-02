@@ -13,6 +13,10 @@ khb_header('Beats', 'beats.php');
 <section>
   <div class="wrap">
     <div class="section-head"><div><p class="ey">Beat Store</p><h2>Browse the catalog</h2></div></div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;border-color:var(--amber);margin-bottom:24px">
+      <div><strong>⭐ Full catalog lives on BeatStars.</strong><br><span class="muted">Instant licensing & checkout for every beat — plus tracks not listed here.</span></div>
+      <a class="suno-cta" href="<?= h(BEATSTARS_URL) ?>" target="_blank" rel="noopener">Shop on BeatStars ↗</a>
+    </div>
     <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px">
       <input name="q" value="<?= h($q) ?>" placeholder="Search title, mood, genre…" style="flex:1;min-width:220px">
       <select name="genre" style="max-width:200px"><option value="">All genres</option>

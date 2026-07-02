@@ -19,6 +19,7 @@ khb_header('Original Beats & Studio Sessions', '');
         <a class="btn ghost" href="/book.php">Book a Session</a>
       </div>
       <div class="socials">
+        <a href="<?= h(BEATSTARS_URL) ?>" target="_blank" rel="noopener">⭐ BeatStars</a>
         <a href="<?= h(SUNO_URL) ?>" target="_blank" rel="noopener">🎵 Suno</a>
         <a href="<?= h(INSTAGRAM_URL) ?>" target="_blank" rel="noopener">📸 Instagram</a>
         <span class="wave" aria-hidden="true"><?php for($i=0;$i<14;$i++) echo '<i></i>'; ?></span>

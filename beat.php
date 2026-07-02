@@ -45,6 +45,7 @@ khb_header($beat['title'], 'beats.php');
         </form>
         <?php endforeach; ?>
         <p class="muted" style="font-size:.82rem">Instant download after checkout. See full <a href="/licensing.php">licensing terms</a>.</p>
+        <p style="margin-top:6px"><a class="suno-cta" href="<?= h(BEATSTARS_URL) ?>" target="_blank" rel="noopener" style="font-size:.85rem;padding:8px 14px">⭐ Prefer BeatStars? Buy there ↗</a></p>
       </div>
     </div>
   </div>
