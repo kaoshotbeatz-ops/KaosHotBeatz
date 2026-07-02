@@ -126,9 +126,31 @@ $MELODY = [
       <p class="muted" style="font-size:.85rem;margin-bottom:16px">Drag the vinyl to scratch it. Hit ▶ Spin for straight playback. Watch the meters bounce with your beat.</p>
       <div class="deck-mixer">
         <div class="deck">
-          <div class="platter-wrap">
-            <div class="vinyl" id="vinyl"><div class="vlabel">CREAM</div></div>
-            <div class="tonearm" id="tonearm"><div class="headshell"></div></div>
+          <div class="plinth">
+            <div class="platter-wrap">
+              <div class="vinyl" id="vinyl">
+                <div class="strobe-ring"></div>
+                <div class="vlabel">CREAM</div>
+                <div class="spindle"></div>
+              </div>
+              <div class="tonearm" id="tonearm">
+                <div class="counterweight"></div>
+                <div class="arm-tube"></div>
+                <div class="headshell"></div>
+              </div>
+              <div class="cue-light" id="cueLight"></div>
+            </div>
+            <div class="deck-side">
+              <div class="pitch-block">
+                <label class="mono">PITCH</label>
+                <div class="pitch-track"><input type="range" id="pitchFader" min="-8" max="8" value="0" step="0.1" orient="vertical"></div>
+                <b class="mono" id="pitchVal">0%</b>
+              </div>
+              <button class="startstop" id="startstopBtn">
+                <span class="ss-light" id="ssLight"></span>
+                START<br>STOP
+              </button>
+            </div>
           </div>
           <div class="deck-controls">
             <button class="btn ghost sm" id="ttPlay">▶ Spin</button>
@@ -276,7 +298,7 @@ function synth(i,t){ var c=ctx(); if(i===2||i===3||i===5||i===6||i===7||i===10||
 function playSample(bank,i,when){ var b=buffers[bank][i]; if(!b){ if(bank===0) synth(i,when||ctx().currentTime); return; } var s=ctx().createBufferSource(); s.buffer=b; var g=ctx().createGain(); g.gain.value=0.95; s.connect(g).connect(bank===0?drumGain:melodyGain); s.start(when||ctx().currentTime); }
 var padEls=[].slice.call(document.querySelectorAll('.pad'));
 function flash(i){ var el=padEls[i]; if(!el) return; el.classList.add('hit'); setTimeout(function(){el.classList.remove('hit');},90); }
-function trigger(bank,i,when){ playSample(bank,i,when); flash(i); }
+function trigger(bank,i,when){ playSample(bank,i,when); if(when&&AC){ var ms=(when-AC.currentTime)*1000; if(ms>4){ setTimeout(function(){flash(i);},ms); return; } } flash(i); }
 
 // ---- load both kits (fetch/decode starts immediately — doesn't need a gesture) ----
 var unlockEl=document.getElementById('unlock');
@@ -446,17 +468,33 @@ function countIn(cb){
   loopTimers.push(setTimeout(function(){ counting=false; cb(); }, totalBeats*bd*1000));
 }
 
-var start0=0;
-function startPlay(){ if(playing) return; playing=true; var start=ctx().currentTime; start0=start; var d=loopDur();
-  function schedule(){ events.forEach(function(ev){ var key=(ev.bank||0)+':'+ev.i; if(mutedTracks[key]) return; loopTimers.push(setTimeout(function(){ trigger(ev.bank||0,ev.i); }, ev.t*1000)); }); loopTimers.push(setTimeout(schedule, d*1000)); }
-  if(!recording) recStart=start; schedule();
+var start0=0, schedTimer=null, scheduledLoops=0;
+var LOOKAHEAD=0.15, SCHED_MS=25; // schedule ~150ms of audio ahead, checked every 25ms — locks hits to the exact sample time instead of JS timer drift
+function startPlay(){
+  if(playing) return; playing=true;
+  var c=ctx(); var start=c.currentTime; start0=start; var d=loopDur();
+  if(!recording) recStart=start;
+  scheduledLoops=0;
+  function scheduler(){
+    var now=ctx().currentTime;
+    while(start0+scheduledLoops*d < now+LOOKAHEAD){
+      var loopBase=start0+scheduledLoops*d;
+      events.forEach(function(ev){
+        var key=(ev.bank||0)+':'+ev.i; if(mutedTracks[key]) return;
+        var when=loopBase+ev.t; if(when < now-0.02) return;
+        trigger(ev.bank||0, ev.i, when);
+      });
+      scheduledLoops++;
+    }
+  }
+  scheduler(); schedTimer=setInterval(scheduler, SCHED_MS);
   function tick(){ if(!playing) return; var elapsed=(ctx().currentTime-start0)%d; var el=elapsed/d; document.getElementById('prog').style.width=(el*100)+'%';
     var beatPos=Math.floor(elapsed/beatDur()); var bar=Math.floor(beatPos/BEATS_PER_BAR)+1, beat=(beatPos%BEATS_PER_BAR)+1;
     var lb=document.getElementById('lcdBar'); if(lb) lb.textContent=bar+':'+beat;
     var sp=document.getElementById('seqPlayhead'); if(sp) sp.style.left=(el*100)+'%';
     progRAF=requestAnimationFrame(tick); } tick();
 }
-function stopPlay(){ playing=false; counting=false; loopTimers.forEach(clearTimeout); loopTimers=[]; if(progRAF) cancelAnimationFrame(progRAF); document.getElementById('prog').style.width='0'; }
+function stopPlay(){ playing=false; counting=false; if(schedTimer){ clearInterval(schedTimer); schedTimer=null; } loopTimers.forEach(clearTimeout); loopTimers=[]; if(progRAF) cancelAnimationFrame(progRAF); document.getElementById('prog').style.width='0'; }
 document.getElementById('rec').addEventListener('click',function(){
   if(counting) return;
   if(recording){ recording=false; this.classList.remove('on'); setStatus('recorded '+events.length+' hits'); return; }
@@ -527,8 +565,21 @@ document.addEventListener('mouseup',ttUp);
 vinylEl.addEventListener('touchstart',function(e){ e.preventDefault(); var t=e.touches[0]; ttDown(t.clientX,t.clientY); },{passive:false});
 vinylEl.addEventListener('touchmove',function(e){ e.preventDefault(); var t=e.touches[0]; ttMove(t.clientX,t.clientY); },{passive:false});
 vinylEl.addEventListener('touchend',ttUp);
-document.getElementById('ttPlay').addEventListener('click',function(){ var buf=ttBuffer(); if(!buf){ setStatus('still loading…'); return; } ctx(); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} } var s=AC.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(ttGain); s.start(0); ttLoopSrc=s; vinylEl.classList.add('spin'); armDown(); setStatus('turntable spinning'); });
-document.getElementById('ttStop').addEventListener('click',function(){ if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } vinylEl.classList.remove('spin'); armUp(); });
+var ssLight=document.getElementById('ssLight'), pitchFader=document.getElementById('pitchFader'), pitchVal=document.getElementById('pitchVal');
+function ttSpinStart(){
+  var buf=ttBuffer(); if(!buf){ setStatus('still loading…'); return; }
+  ctx(); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} }
+  var s=AC.createBufferSource(); s.buffer=buf; s.loop=true; s.playbackRate.value=1+(+pitchFader.value/100); s.connect(ttGain); s.start(0);
+  ttLoopSrc=s; vinylEl.classList.add('spin'); armDown(); if(ssLight) ssLight.classList.add('on'); setStatus('turntable spinning');
+}
+function ttSpinStop(){ if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } vinylEl.classList.remove('spin'); armUp(); if(ssLight) ssLight.classList.remove('on'); }
+document.getElementById('ttPlay').addEventListener('click',ttSpinStart);
+document.getElementById('ttStop').addEventListener('click',ttSpinStop);
+document.getElementById('startstopBtn').addEventListener('click',function(){ if(ttLoopSrc) ttSpinStop(); else ttSpinStart(); });
+pitchFader.addEventListener('input',function(){
+  var pct=+this.value; pitchVal.textContent=(pct>0?'+':'')+pct.toFixed(1)+'%';
+  if(ttLoopSrc) ttLoopSrc.playbackRate.value=1+(pct/100);
+});
 
 // ---- mixer mutes (remember prior fader value, restore on un-mute) ----
 function bindMute(btnId,faderId,getNode){

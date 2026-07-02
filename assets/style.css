@@ -397,3 +397,45 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .seq-lane{position:relative;flex:1;height:16px;background:#141416;border-radius:3px;border:1px solid #000}
 .seq-block{position:absolute;top:2px;width:6px;height:11px;border-radius:2px;background:var(--gold2)}
 .seq-lane.bank1 .seq-block{background:#3ecf8e}
+
+/* ===== realistic direct-drive turntable ===== */
+.plinth{position:relative;width:280px;margin:0 auto;padding:18px;border-radius:10px;
+  background:linear-gradient(160deg,#2c2c30,#141416 60%);border:3px solid #000;
+  box-shadow:0 22px 40px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.06);
+  display:flex;gap:10px;align-items:flex-start}
+.platter-wrap{position:relative;width:180px;height:200px;flex:0 0 180px}
+.vinyl{position:absolute;top:10px;left:0;width:180px;height:180px;border-radius:50%;
+  background:repeating-radial-gradient(circle at center,#0a0a0c 0 2px,#161619 2px 4px);
+  box-shadow:0 0 0 5px #202024,0 10px 20px rgba(0,0,0,.55);cursor:grab;touch-action:none}
+.vinyl:active{cursor:grabbing}
+.vinyl.spin{animation:vspin 1.9s linear infinite}
+@keyframes vspin{to{transform:rotate(360deg)}}
+.strobe-ring{position:absolute;inset:-5px;border-radius:50%;
+  background:repeating-conic-gradient(#e11d1d 0 4deg,transparent 4deg 12deg);
+  -webkit-mask:radial-gradient(circle,transparent 96%,#000 97%,#000 100%,transparent 101%);
+  mask:radial-gradient(circle,transparent 96%,#000 97%,#000 100%,transparent 101%);opacity:.85}
+.vinyl .vlabel{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:.6rem;color:#000;text-align:center;
+  box-shadow:0 0 0 3px #000}
+.vinyl .spindle{position:absolute;inset:0;margin:auto;width:8px;height:8px;border-radius:50%;background:#c9c9cf;border:1px solid #000;z-index:3}
+.tonearm{position:absolute;top:0;right:-8px;width:130px;height:150px;transform-origin:96% 6%;transform:rotate(-30deg);transition:transform .35s ease;z-index:4}
+.tonearm.down{transform:rotate(-6deg)}
+.tonearm .counterweight{position:absolute;top:-2px;right:0;width:16px;height:16px;border-radius:50%;background:linear-gradient(180deg,#3a3a40,#161619);border:2px solid #000}
+.tonearm .arm-tube{position:absolute;top:6px;right:6px;width:3px;height:118px;background:linear-gradient(90deg,#c9c9cf,#8a8a90);border:1px solid #000;border-radius:3px}
+.tonearm .headshell{position:absolute;top:118px;right:-1px;width:16px;height:11px;background:#1a1a1a;border:1px solid #000;border-radius:2px}
+.tonearm .headshell::after{content:"";position:absolute;bottom:-3px;left:6px;width:2px;height:5px;background:#888}
+.cue-light{position:absolute;bottom:2px;right:10px;width:6px;height:6px;border-radius:50%;background:#3a0a0a;box-shadow:0 0 0 2px #000;z-index:5}
+.vinyl.spin ~ .cue-light,.tonearm.down ~ .cue-light{background:#ff2e2e;box-shadow:0 0 8px #ff2e2e,0 0 0 2px #000}
+.deck-side{display:flex;flex-direction:column;align-items:center;gap:14px;flex:1}
+.pitch-block{display:flex;flex-direction:column;align-items:center;gap:6px}
+.pitch-block label{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.05em}
+.pitch-track{background:#0c0c0e;border:2px solid #000;border-radius:5px;padding:6px 4px}
+.pitch-track input[type=range]{-webkit-appearance:slider-vertical;appearance:slider-vertical;width:20px;height:100px}
+#pitchVal{font-family:var(--mono);font-size:.7rem;color:var(--gold2)}
+.startstop{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#3a3a40,#141416 70%);
+  border:3px solid #000;color:#cfcbc2;font-family:var(--disp);font-size:.6rem;letter-spacing:.03em;line-height:1.1;
+  cursor:pointer;box-shadow:0 6px 0 #000,inset 0 2px 0 rgba(255,255,255,.08)}
+.startstop:active{box-shadow:0 3px 0 #000;transform:translateY(3px)}
+.ss-light{display:block;width:6px;height:6px;border-radius:50%;background:#3a0a0a;margin:0 auto 6px;box-shadow:0 0 0 1px #000}
+.ss-light.on{background:#3ecf8e;box-shadow:0 0 6px #3ecf8e,0 0 0 1px #000}
+@media(max-width:480px){.plinth{width:100%;padding:12px}.platter-wrap{width:150px;flex-basis:150px}.vinyl{width:150px;height:150px}.tonearm{width:110px;height:126px}.tonearm .arm-tube{height:96px}.tonearm .headshell{top:96px}}
