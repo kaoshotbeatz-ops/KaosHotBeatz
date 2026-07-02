@@ -26,3 +26,7 @@ define('PAYPAL_SECRET', '');          // Secret
 
 // Studio session deposit (USD) charged to lock a booking
 define('DEPOSIT_AMOUNT', 50.00);
+
+// Secret token for the private "all my sessions" calendar feed you subscribe to
+// (Apple/Google/Outlook -> Add calendar by URL -> book-ics.php?feed=THIS_TOKEN)
+define('CAL_FEED_TOKEN', 'change-me-to-a-random-string');

@@ -267,3 +267,18 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .cityline-track svg{height:clamp(120px,26vh,230px);width:auto;display:block}
 @keyframes cityroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.cityline-track{animation:none}}
+
+/* ===== calendar booking ===== */
+.cal-wrap{background:var(--panel);border:3px solid #000;border-radius:14px;padding:18px;box-shadow:6px 6px 0 rgba(0,0,0,.5);margin-top:18px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-head strong{font-size:1.2rem;text-transform:uppercase;letter-spacing:.05em}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+.cal-dow span{text-align:center;font-family:var(--mono);font-size:.72rem;color:var(--muted);text-transform:uppercase}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;border-radius:8px;font-size:1rem}
+.cal-cell.empty{background:transparent}
+.cal-cell.off{background:#131316;color:#3a3a40}
+.cal-cell.open{background:#000;border:2px solid var(--gold);color:var(--gold);cursor:pointer;transition:.12s}
+.cal-cell.open:hover{background:var(--gold);color:#000}
+.cal-cell.sel{background:var(--gold);color:#000;border-color:#000}
+@media(max-width:520px){.cal-cell{font-size:.85rem;border-radius:6px}}
