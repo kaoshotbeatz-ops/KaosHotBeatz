@@ -7,7 +7,9 @@ if (!$beat) { http_response_code(404); exit('Beat not found.'); }
 
 $STEM_ORDER = [
   'drums'         => ['DRUMS', '#ffd152'],
+  'percussion'    => ['PERCUSSION', '#ffb84d'],
   'bass'          => ['BASS', '#3ecf8e'],
+  'guitar'        => ['GUITAR', '#8be04e'],
   'keyboard'      => ['KEYS', '#7fb0ff'],
   'synth'         => ['SYNTH', '#e11d1d'],
   'vocals'        => ['LEAD VOCAL', '#ff6fa8'],
