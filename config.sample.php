@@ -9,7 +9,7 @@ define('SITE_EMAIL', 'beats@kaoshotbeatz.com');   // where sales/booking notices
 define('ARTIST_TAGLINE', 'NY · Long Island Hip-Hop Producer');
 define('ARTIST_GENRES',  'Soul · Hip-Hop · Boom Bap · Raw · Gospel');
 define('SUNO_URL',       'https://suno.com/@kaoshotbeatz');
-define('INSTAGRAM_URL',  'https://instagram.com/kaoshotbeatz');
+define('INSTAGRAM_URL',  'https://instagram.com/kaosbeatz');
 define('BEATSTARS_URL',  'https://www.beatstars.com/kaoshotbeatz');
 define('STAT_PLAYS',     '36K+');   // update as it grows
 define('STAT_SONGS',     '25+');
