@@ -19,13 +19,11 @@ khb_header('Cart', '');
         <?php foreach ($d['items'] as $it): ?>
         <div class="beat" style="grid-template-columns:1fr auto auto">
           <div class="meta"><div class="t"><?= h($it['beat']['title']) ?></div><div class="s"><?= h($it['tier_name']) ?></div></div>
-          <div class="price mono"><?= money($it['price']) ?></div>
           <form method="post"><?= csrf_field() ?><input type="hidden" name="remove" value="<?= $it['idx'] ?>"><button class="btn sm ghost">✕</button></form>
         </div>
         <?php endforeach; ?>
       </div>
-      <div class="card" style="display:flex;justify-content:space-between;align-items:center">
-        <div><span class="muted">Total</span><br><span class="mono" style="font-size:1.6rem;color:var(--amber)"><?= money($d['total']) ?></span></div>
+      <div class="card" style="display:flex;justify-content:flex-end;align-items:center">
         <form method="post"><?= csrf_field() ?><input type="hidden" name="clear" value="1"><button class="btn ghost sm">Clear cart</button></form>
       </div>
 

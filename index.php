@@ -133,7 +133,7 @@ khb_header('Original Beats & Studio Sessions', '');
         <div class="meta"><div class="t"><?= h($b['title']) ?></div>
           <div class="s"><?= h($b['bpm']) ?> BPM · <?= h($b['key'] ?? '—') ?><?= !empty($b['genre']) ? ' · '.h($b['genre']) : '' ?></div></div>
         <div class="tags"><?php foreach (array_slice(explode(',', $b['moods'] ?? ''),0,3) as $t){ $t=trim($t); if($t) echo '<span class="tag">'.h($t).'</span>'; } ?></div>
-        <a class="btn sm" href="/beat.php?id=<?= h($b['id']) ?>"><?= money($tiers['mp3']['price']) ?>+</a>
+        <a class="btn sm" href="/beat.php?id=<?= h($b['id']) ?>">Get Beat</a>
       </div>
       <?php endforeach; ?>
     </div>

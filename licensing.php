@@ -12,7 +12,6 @@ khb_header('Licensing', '');
       <?php $feat = ['excl']; foreach ($tiers as $k => $t): ?>
       <div class="card price-card<?= in_array($k,$feat)?' feat':'' ?>">
         <h3><?= h($t['name']) ?></h3>
-        <div class="amt"><?= money($t['price']) ?></div>
         <p class="muted"><?= h($t['desc']) ?></p>
       </div>
       <?php endforeach; ?>

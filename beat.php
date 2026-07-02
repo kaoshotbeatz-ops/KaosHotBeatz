@@ -40,7 +40,6 @@ khb_header($beat['title'], 'beats.php');
           <?= csrf_field() ?>
           <input type="hidden" name="tier" value="<?= $key ?>">
           <div style="flex:1"><strong><?= h($t['name']) ?></strong><br><span class="muted" style="font-size:.86rem"><?= h($t['desc']) ?></span></div>
-          <div class="price mono" style="font-size:1.1rem;color:var(--amber)"><?= money($t['price']) ?></div>
           <button class="btn sm">Add</button>
         </form>
         <?php endforeach; ?>
