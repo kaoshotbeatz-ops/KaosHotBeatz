@@ -299,7 +299,24 @@ function startCompMeters(){ function loop(){
 var _nb=null; function noise(){ if(_nb) return _nb; var c=ctx(),b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0); for(var i=0;i<d.length;i++) d[i]=Math.random()*2-1; _nb=b; return b; }
 function synth(i,t){ var c=ctx(); if(i===2||i===3||i===5||i===6||i===7||i===10||i===11){ var s=c.createBufferSource(); s.buffer=noise(); var g=c.createGain(),f=c.createBiquadFilter(); f.type='highpass'; f.frequency.value=(i===2||i===3||i===10)?1200:7000; var dur=(i===6)?0.3:0.05; g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur); s.connect(f).connect(g).connect(drumGain); s.start(t); s.stop(t+dur+0.05); } else { var o=c.createOscillator(),g2=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(45,t+0.4); g2.gain.setValueAtTime(1,t); g2.gain.exponentialRampToValueAtTime(0.001,t+0.5); o.connect(g2).connect(drumGain); o.start(t); o.stop(t+0.55); } }
 
-function playSample(bank,i,when){ var b=buffers[bank][i]; if(!b){ if(bank===0) synth(i,when||ctx().currentTime); return; } var s=ctx().createBufferSource(); s.buffer=b; var g=ctx().createGain(); g.gain.value=0.95; s.connect(g).connect(bank===0?drumGain:melodyGain); s.start(when||ctx().currentTime); }
+// ---- auto-BPM: estimate a melody loop's native tempo from its raw duration ----
+// (no tempo metadata is embedded in these WAVs, so we test standard bar-lengths
+// and pick whichever lands the tempo in a musically normal 60–180bpm range)
+var melodyBPM=new Array(16);
+function detectBPM(duration){
+  var bars=[1,2,4,8,16,3,6,12];
+  for(var k=0;k<bars.length;k++){
+    var bpm=60*(bars[k]*4)/duration;
+    if(bpm>=60 && bpm<=180) return Math.round(bpm);
+  }
+  return 90; // couldn't land a clean guess — fall back to the project default
+}
+function playSample(bank,i,when){
+  var b=buffers[bank][i]; if(!b){ if(bank===0) synth(i,when||ctx().currentTime); return; }
+  var s=ctx().createBufferSource(); s.buffer=b;
+  if(bank===1 && melodyBPM[i]) s.playbackRate.value=melodyBPM[i]/bpm; // auto-syncs the loop to the current project tempo
+  var g=ctx().createGain(); g.gain.value=0.95; s.connect(g).connect(bank===0?drumGain:melodyGain); s.start(when||ctx().currentTime);
+}
 var padEls=[].slice.call(document.querySelectorAll('.pad'));
 function flash(i){ var el=padEls[i]; if(!el) return; el.classList.add('hit'); setTimeout(function(){el.classList.remove('hit');},90); }
 function trigger(bank,i,when){ playSample(bank,i,when); if(when&&AC){ var ms=(when-AC.currentTime)*1000; if(ms>4){ setTimeout(function(){flash(i);},ms); return; } } flash(i); }
@@ -314,7 +331,7 @@ function loadKits(){
     for(var i=0;i<kit.total;i++){ (function(bank,i){
       fetch('/assets/'+kit.dir+'/'+(bank===0?'pad':'m')+i+'.wav').then(function(r){ return r.arrayBuffer(); })
         .then(function(ab){ return ctx().decodeAudioData(ab); })
-        .then(function(buf){ buffers[bank][i]=buf; kit.done++; checkReady(); })
+        .then(function(buf){ buffers[bank][i]=buf; if(bank===1) melodyBPM[i]=detectBPM(buf.duration); kit.done++; checkReady(); })
         .catch(function(){ kit.done++; checkReady(); });
     })(bank,i); }
   });
