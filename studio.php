@@ -66,6 +66,8 @@ $MELODY = [
         <button class="btn ghost sm" id="play">▶ PLAY</button>
         <button class="btn ghost sm" id="stop">■ STOP</button>
         <button class="btn ghost sm" id="clear">CLEAR</button>
+        <button class="btn sm danger" id="panic">⏹⏹ DOUBLE STOP</button>
+        <button class="btn ghost sm erase" id="erase">⌫ ERASE (hold + tap pad)</button>
         <span class="bpm">BPM <input type="range" id="bpm" min="60" max="150" value="90"><b id="bpmv" class="mono">90</b></span>
         <button class="btn ghost sm" id="tapTempo">TAP</button>
         <span class="live" id="status">load the kit ↑</span>
@@ -297,10 +299,44 @@ function quantize(t){
   var d=loopDur(); if(snapped>=d) snapped-=d; if(snapped<0) snapped=0;
   return snapped;
 }
-function hit(i){ var now=ctx().currentTime; trigger(curBank,i,now); if(recording){ var raw=(now-recStart)%loopDur(); events.push({i:i,bank:curBank,t:quantize(raw)}); } }
+var eraseMode=false;
+function hit(i){
+  if(eraseMode){
+    var before=events.length;
+    events=events.filter(function(ev){ return !(ev.i===i && ev.bank===curBank); });
+    var removed=before-events.length;
+    flash(i);
+    setStatus(removed ? ('erased '+removed+' hit'+(removed>1?'s':'')+' from that pad') : 'no hits on that pad to erase');
+    return;
+  }
+  var now=ctx().currentTime; trigger(curBank,i,now); if(recording){ var raw=(now-recStart)%loopDur(); events.push({i:i,bank:curBank,t:quantize(raw)}); }
+}
 padEls.forEach(function(el){ var i=+el.getAttribute('data-i');
   el.addEventListener('mousedown',function(e){ e.preventDefault(); hit(i); });
   el.addEventListener('touchstart',function(e){ e.preventDefault(); hit(i); },{passive:false});
+});
+
+// ---- hold ERASE + tap a pad to remove just that sound from the recording ----
+var eraseBtn=document.getElementById('erase');
+function setErase(v){ eraseMode=v; eraseBtn.classList.toggle('on',v); if(v) setStatus('hold + tap a pad to erase it from the loop'); }
+eraseBtn.addEventListener('mousedown',function(e){ e.preventDefault(); setErase(true); });
+eraseBtn.addEventListener('touchstart',function(e){ e.preventDefault(); setErase(true); },{passive:false});
+document.addEventListener('mouseup',function(){ if(eraseMode) setErase(false); });
+eraseBtn.addEventListener('touchend',function(e){ e.preventDefault(); setErase(false); });
+eraseBtn.addEventListener('touchcancel',function(){ setErase(false); });
+
+// ---- double-stop / panic: kill all sound instantly ----
+document.getElementById('panic').addEventListener('click',function(){
+  ctx();
+  var now=AC.currentTime;
+  master.gain.cancelScheduledValues(now);
+  master.gain.setValueAtTime(0,now);
+  master.gain.setValueAtTime(+document.getElementById('gMaster').value, now+0.03);
+  stopPlay(); recording=false; document.getElementById('rec').classList.remove('on');
+  if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; }
+  if(ttScratchSrc){ try{ttScratchSrc.stop();}catch(e){} }
+  vinylEl.classList.remove('spin'); armUp();
+  setStatus('■■ all sound stopped');
 });
 var KEYS={'1':0,'2':1,'3':2,'4':3,'q':4,'w':5,'e':6,'r':7,'a':8,'s':9,'d':10,'f':11,'z':12,'x':13,'c':14,'v':15};
 document.addEventListener('keydown',function(e){ if(e.repeat) return; var k=e.key.toLowerCase(); if(k in KEYS){ if(unlockEl.classList.contains('hide')) hit(KEYS[k]); }});
