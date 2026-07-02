@@ -114,6 +114,31 @@ $MELODY = [
     </div>
 
     <div class="machine xl-skin" style="margin-top:26px">
+      <h3 style="margin:0 0 6px">Compressor Rack</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:16px">Real dynamics processing — a drum-bus compressor and an SSL-style master glue compressor. Watch the gain-reduction meter pull down when it's working.</p>
+      <div class="comp-rack">
+        <div class="comp-strip">
+          <div class="comp-head"><span>DRUM BUS COMP</span><button class="btn ghost sm comp-on" id="compDrumOn" data-target="drum">ON</button></div>
+          <div class="comp-row"><label>THRESH</label><input type="range" id="cd-th" min="-40" max="0" value="-18"><b class="mono" id="cd-thv">-18dB</b></div>
+          <div class="comp-row"><label>RATIO</label><input type="range" id="cd-ra" min="1" max="20" value="4"><b class="mono" id="cd-rav">4:1</b></div>
+          <div class="comp-row"><label>ATTACK</label><input type="range" id="cd-at" min="1" max="100" value="3"><b class="mono" id="cd-atv">3ms</b></div>
+          <div class="comp-row"><label>RELEASE</label><input type="range" id="cd-re" min="20" max="1000" value="250"><b class="mono" id="cd-rev">250ms</b></div>
+          <div class="comp-row"><label>MAKEUP</label><input type="range" id="cd-mk" min="0" max="200" value="100"><b class="mono" id="cd-mkv">1.0x</b></div>
+          <div class="gr-row"><label>GR</label><div class="grmeter"><i id="cd-gr"></i></div></div>
+        </div>
+        <div class="comp-strip">
+          <div class="comp-head"><span>MASTER BUS <em>(SSL-style glue)</em></span><button class="btn ghost sm comp-on" id="compMasterOn" data-target="master">ON</button></div>
+          <div class="comp-row"><label>THRESH</label><input type="range" id="cm-th" min="-40" max="0" value="-12"><b class="mono" id="cm-thv">-12dB</b></div>
+          <div class="comp-row"><label>RATIO</label><input type="range" id="cm-ra" min="1" max="20" value="3"><b class="mono" id="cm-rav">3:1</b></div>
+          <div class="comp-row"><label>ATTACK</label><input type="range" id="cm-at" min="1" max="100" value="10"><b class="mono" id="cm-atv">10ms</b></div>
+          <div class="comp-row"><label>RELEASE</label><input type="range" id="cm-re" min="20" max="1000" value="300"><b class="mono" id="cm-rev">300ms</b></div>
+          <div class="comp-row"><label>MAKEUP</label><input type="range" id="cm-mk" min="0" max="200" value="115"><b class="mono" id="cm-mkv">1.15x</b></div>
+          <div class="gr-row"><label>GR</label><div class="grmeter"><i id="cm-gr"></i></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="machine xl-skin" style="margin-top:26px">
       <h3 style="margin:0 0 6px">Play the Keys</h3>
       <div class="key-top">
         <label class="mono muted" style="font-size:.8rem">SOUND</label>
@@ -123,6 +148,10 @@ $MELODY = [
           <option value="2">Stab</option>
           <option value="3">Bells</option>
         </select>
+        <label class="mono muted" style="font-size:.8rem;margin-left:14px">OCTAVE</label>
+        <button class="btn ghost sm" id="octDown">−</button>
+        <span class="mono" id="octLbl" style="min-width:52px;text-align:center;color:var(--gold)">OCT 0</span>
+        <button class="btn ghost sm" id="octUp">+</button>
       </div>
       <div class="keys" id="keys">
         <?php $NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B','C']; foreach ($NOTES as $semi => $n): ?>
@@ -138,6 +167,7 @@ $MELODY = [
 (function(){
 var AC=null, master=null, ready=false, curBank=0;
 var drumGain=null, melodyGain=null, keysGain=null, ttGain=null;
+var drumComp=null, drumMakeup=null, masterComp=null, masterMakeup=null;
 var masterAn=null, drumAn=null, melodyAn=null, keysAn=null, ttAn=null;
 var buffers=[new Array(16), new Array(16)]; // [0]=drums, [1]=soul melody
 var KITS=[{dir:'drums',done:0,total:16},{dir:'melody',done:0,total:16}];
@@ -147,11 +177,22 @@ function ctx(){
     AC=new (window.AudioContext||window.webkitAudioContext)();
     master=AC.createGain(); master.gain.value=1.0;
     drumGain=AC.createGain(); melodyGain=AC.createGain(); keysGain=AC.createGain(); ttGain=AC.createGain();
-    drumGain.connect(master); melodyGain.connect(master); keysGain.connect(master); ttGain.connect(master);
-    master.connect(AC.destination);
-    drumAn=mkAnalyser(AC,drumGain); melodyAn=mkAnalyser(AC,melodyGain); keysAn=mkAnalyser(AC,keysGain); ttAn=mkAnalyser(AC,ttGain);
-    masterAn=mkAnalyser(AC,master);
-    startMeters();
+
+    // drum bus compressor
+    drumComp=AC.createDynamicsCompressor(); drumComp.threshold.value=-18; drumComp.knee.value=6; drumComp.ratio.value=4; drumComp.attack.value=0.003; drumComp.release.value=0.25;
+    drumMakeup=AC.createGain(); drumMakeup.gain.value=1.0;
+    drumGain.connect(drumComp); drumComp.connect(drumMakeup); drumMakeup.connect(master);
+
+    melodyGain.connect(master); keysGain.connect(master); ttGain.connect(master);
+
+    // master bus (SSL-style glue) compressor
+    masterComp=AC.createDynamicsCompressor(); masterComp.threshold.value=-12; masterComp.knee.value=6; masterComp.ratio.value=3; masterComp.attack.value=0.01; masterComp.release.value=0.3;
+    masterMakeup=AC.createGain(); masterMakeup.gain.value=1.15;
+    master.connect(masterComp); masterComp.connect(masterMakeup); masterMakeup.connect(AC.destination);
+
+    drumAn=mkAnalyser(AC,drumMakeup); melodyAn=mkAnalyser(AC,melodyGain); keysAn=mkAnalyser(AC,keysGain); ttAn=mkAnalyser(AC,ttGain);
+    masterAn=mkAnalyser(AC,masterMakeup);
+    startMeters(); startCompMeters();
   }
   if(AC.state==='suspended') AC.resume();
   return AC;
@@ -163,6 +204,13 @@ var _mbuf=new Uint8Array(256);
 function meterLevel(an){ if(!an) return 0; an.getByteTimeDomainData(_mbuf); var sum=0; for(var i=0;i<_mbuf.length;i++){ var v=(_mbuf[i]-128)/128; sum+=v*v; } return Math.sqrt(sum/_mbuf.length); }
 function setMeter(id,lvl){ var el=document.getElementById(id); if(el) el.style.height=Math.min(100,lvl*280)+'%'; }
 function startMeters(){ function loop(){ setMeter('mDrums',meterLevel(drumAn)); setMeter('mMelody',meterLevel(melodyAn)); setMeter('mKeys',meterLevel(keysAn)); setMeter('mTT',meterLevel(ttAn)); setMeter('mMaster',meterLevel(masterAn)); requestAnimationFrame(loop); } loop(); }
+
+// ---- compressor gain-reduction meters (reads the node's live .reduction, in dB) ----
+function startCompMeters(){ function loop(){
+  if(drumComp){ var g1=document.getElementById('cd-gr'); if(g1) g1.style.width=Math.min(100,Math.abs(drumComp.reduction)*5)+'%'; }
+  if(masterComp){ var g2=document.getElementById('cm-gr'); if(g2) g2.style.width=Math.min(100,Math.abs(masterComp.reduction)*5)+'%'; }
+  requestAnimationFrame(loop);
+} loop(); }
 
 // ---- fallback synth (used only if a sample fails to load) ----
 var _nb=null; function noise(){ if(_nb) return _nb; var c=ctx(),b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0); for(var i=0;i<d.length;i++) d[i]=Math.random()*2-1; _nb=b; return b; }
@@ -355,14 +403,17 @@ vinylEl.addEventListener('touchend',ttUp);
 document.getElementById('ttPlay').addEventListener('click',function(){ var buf=ttBuffer(); if(!buf){ setStatus('still loading…'); return; } ctx(); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} } var s=AC.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(ttGain); s.start(0); ttLoopSrc=s; vinylEl.classList.add('spin'); setStatus('turntable spinning'); });
 document.getElementById('ttStop').addEventListener('click',function(){ if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } vinylEl.classList.remove('spin'); });
 
-// ---- keyboard: pitch-shifted one-shots, switchable voice ----
+// ---- keyboard: pitch-shifted one-shots, switchable voice, switchable octave ----
 var VOICE_IDX=[11,12,13,14]; // melody bank indices: Rhodes stab, Chord shot, Stab, Bells
-var curVoice=0;
+var curVoice=0, octave=0;
 document.getElementById('voiceSel').addEventListener('change',function(){ curVoice=+this.value; });
+function setOctave(o){ octave=Math.max(-2,Math.min(2,o)); document.getElementById('octLbl').textContent='OCT '+(octave>0?'+':'')+octave; }
+document.getElementById('octUp').addEventListener('click',function(){ setOctave(octave+1); });
+document.getElementById('octDown').addEventListener('click',function(){ setOctave(octave-1); });
 function playKey(semi,el){
   var idx=VOICE_IDX[curVoice]; var buf=buffers[1][idx];
   if(!buf){ setStatus('still loading…'); return; }
-  ctx(); var s=AC.createBufferSource(); s.buffer=buf; s.playbackRate.value=Math.pow(2,semi/12);
+  ctx(); var s=AC.createBufferSource(); s.buffer=buf; s.playbackRate.value=Math.pow(2,(semi+octave*12)/12);
   var g=AC.createGain(); g.gain.value=1; s.connect(g).connect(keysGain); s.start(0);
   if(el){ el.classList.add('active'); setTimeout(function(){ el.classList.remove('active'); },160); }
 }
@@ -371,6 +422,39 @@ function playKey(semi,el){
   el.addEventListener('mousedown',function(e){ e.preventDefault(); playKey(semi,el); });
   el.addEventListener('touchstart',function(e){ e.preventDefault(); playKey(semi,el); },{passive:false});
 });
+
+// ---- compressor rack: live knob binding + on/off (bypass = transparent params) ----
+function bindComp(prefix,getComp,getMakeup,defaults){
+  function upd(){
+    var comp=getComp(), mk=getMakeup(); if(!comp) return;
+    var th=+document.getElementById(prefix+'-th').value, ra=+document.getElementById(prefix+'-ra').value,
+        at=+document.getElementById(prefix+'-at').value, re=+document.getElementById(prefix+'-re').value,
+        mkv=+document.getElementById(prefix+'-mk').value/100;
+    document.getElementById(prefix+'-thv').textContent=th+'dB';
+    document.getElementById(prefix+'-rav').textContent=ra+':1';
+    document.getElementById(prefix+'-atv').textContent=at+'ms';
+    document.getElementById(prefix+'-rev').textContent=re+'ms';
+    document.getElementById(prefix+'-mkv').textContent=mkv.toFixed(2)+'x';
+    var btn=document.querySelector('[data-target="'+(prefix==='cd'?'drum':'master')+'"]');
+    var on=btn ? !btn.classList.contains('off') : true;
+    comp.threshold.value = on ? th : 0;
+    comp.ratio.value = on ? ra : 1;
+    comp.attack.value = on ? at/1000 : 0.001;
+    comp.release.value = on ? re/1000 : 0.05;
+    comp.knee.value = on ? 6 : 0;
+    if(mk) mk.gain.value = on ? mkv : 1;
+  }
+  ['th','ra','at','re','mk'].forEach(function(k){ var el=document.getElementById(prefix+'-'+k); if(el) el.addEventListener('input',function(){ ctx(); upd(); }); });
+  return upd;
+}
+var updDrumComp=bindComp('cd',function(){return drumComp;},function(){return drumMakeup;});
+var updMasterComp=bindComp('cm',function(){return masterComp;},function(){return masterMakeup;});
+function bindCompToggle(btnId,updFn){
+  var btn=document.getElementById(btnId);
+  btn.addEventListener('click',function(){ btn.classList.toggle('off'); btn.textContent = btn.classList.contains('off') ? 'OFF' : 'ON'; ctx(); updFn(); });
+}
+bindCompToggle('compDrumOn',function(){ updDrumComp(); });
+bindCompToggle('compMasterOn',function(){ updMasterComp(); });
 })();
 </script>
 <?php khb_footer(); ?>
