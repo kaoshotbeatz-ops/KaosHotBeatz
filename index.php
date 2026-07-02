@@ -8,6 +8,16 @@ $tiers = license_tiers();
 khb_header('Original Beats & Studio Sessions', '');
 ?>
 <section class="hero split brick">
+  <?php
+    $piece = '<span class="piece"><svg viewBox="0 0 1520 340" xmlns="http://www.w3.org/2000/svg">'
+      . '<text x="42" y="252" font-family="Anton,Impact,sans-serif" font-size="230" fill="#000">KAOSHOTBEATZ</text>'
+      . '<text x="26" y="234" font-family="Anton,Impact,sans-serif" font-size="230" fill="#e11d1d" stroke="#000" stroke-width="8" paint-order="stroke" style="paint-order:stroke">KAOSHOTBEATZ</text>'
+      . '<polygon points="1360,110 1470,150 1360,190" fill="#e11d1d" stroke="#000" stroke-width="8"/>'
+      . '<circle cx="22" cy="70" r="8" fill="#e11d1d"/><circle cx="70" cy="40" r="5" fill="#e11d1d"/>'
+      . '<circle cx="1330" cy="300" r="7" fill="#e11d1d"/><circle cx="1290" cy="316" r="4" fill="#e11d1d"/>'
+      . '</svg></span>';
+  ?>
+  <div class="graf-scene"><div class="graf-track"><?= $piece . $piece ?></div></div>
   <div class="wrap">
     <div>
       <p class="kicker"><?= h(ARTIST_TAGLINE) ?></p>

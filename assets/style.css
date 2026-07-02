@@ -248,3 +248,15 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .mpc .lbl2{fill:#9a978f;font-family:var(--mono);font-size:8px;letter-spacing:1px}
 
 .socials .soc{display:inline-flex;align-items:center;gap:6px}
+
+/* ===== moving graffiti backdrop (old-school train/wall) ===== */
+.hero .wrap{position:relative;z-index:2}
+.graf-scene{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.graf-track{position:absolute;top:50%;left:0;display:flex;width:max-content;
+  transform:translateY(-50%);animation:grafroll 24s linear infinite}
+.graf-track .piece{flex:0 0 auto;opacity:.26;padding:0 40px}
+.graf-track svg{height:clamp(190px,50vh,360px);width:auto;display:block}
+@keyframes grafroll{from{transform:translate(0,-50%)}to{transform:translate(-50%,-50%)}}
+@media(prefers-reduced-motion:reduce){.graf-track{animation:none}}
