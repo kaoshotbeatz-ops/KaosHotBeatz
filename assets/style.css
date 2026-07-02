@@ -220,7 +220,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .gfx-strip .wrap{padding:40px 22px}
 .gfx-row{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;text-align:center;margin-top:8px}
 .gfx-icon{padding:8px}
-.gfx-icon svg{width:100%;height:64px}
+.gfx-icon svg{width:64px;height:64px;max-width:100%;display:block;margin:0 auto}
 .gfx-icon svg .st{stroke:var(--gold2);stroke-width:2.4;fill:none;transition:stroke .15s}
 .gfx-icon svg .fl{fill:var(--gold2);transition:fill .15s}
 .gfx-icon:hover svg .st{stroke:var(--spray)}
@@ -260,3 +260,10 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold)}
 .graf-track svg{height:clamp(190px,50vh,360px);width:auto;display:block}
 @keyframes grafroll{from{transform:translate(0,-50%)}to{transform:translate(-50%,-50%)}}
 @media(prefers-reduced-motion:reduce){.graf-track{animation:none}}
+
+/* ===== rolling NYC skyline ===== */
+.cityline{position:absolute;left:0;right:0;bottom:0;height:clamp(120px,26vh,230px);z-index:0;overflow:hidden;pointer-events:none;opacity:.6}
+.cityline-track{position:absolute;bottom:0;left:0;display:flex;width:max-content;animation:cityroll 70s linear infinite}
+.cityline-track svg{height:clamp(120px,26vh,230px);width:auto;display:block}
+@keyframes cityroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.cityline-track{animation:none}}

@@ -18,6 +18,28 @@ khb_header('Original Beats & Studio Sessions', '');
       . '</svg></span>';
   ?>
   <div class="graf-scene"><div class="graf-track"><?= $piece . $piece ?></div></div>
+  <?php
+    $bld = [[0,90,120],[95,64,60],[165,110,150],[280,72,92],[358,128,182],[492,82,112],[578,104,162],[686,58,72],[748,120,200],[872,76,120],[952,96,150],[1052,66,86],[1122,120,176],[1246,92,132],[1342,58,100]];
+    $city = '<svg viewBox="0 0 1400 260" xmlns="http://www.w3.org/2000/svg">';
+    foreach ($bld as $k => $b) {
+        list($x,$w,$h) = $b; $y = 260 - $h;
+        $city .= '<rect x="'.$x.'" y="'.$y.'" width="'.$w.'" height="'.$h.'" fill="#0c0c10" stroke="#000" stroke-width="2"/>';
+        for ($wx = $x + 10; $wx < $x + $w - 8; $wx += 16) {
+            for ($wy = $y + 12; $wy < 252; $wy += 18) {
+                $fill = (($wx + $wy + $k) % 5 == 0) ? '#e11d1d' : '#1b1b20';
+                $city .= '<rect x="'.$wx.'" y="'.$wy.'" width="7" height="9" fill="'.$fill.'"/>';
+            }
+        }
+    }
+    foreach ([[398,78],[792,60]] as $wt) {
+        list($tx,$ty) = $wt;
+        $city .= '<polygon points="'.($tx-16).','.$ty.' '.($tx+16).','.$ty.' '.($tx+12).','.($ty-22).' '.($tx-12).','.($ty-22).'" fill="#0c0c10" stroke="#000" stroke-width="2"/>';
+        $city .= '<rect x="'.($tx-14).'" y="'.$ty.'" width="4" height="10" fill="#0c0c10"/><rect x="'.($tx+10).'" y="'.$ty.'" width="4" height="10" fill="#0c0c10"/>';
+    }
+    $city .= '<line x1="806" y1="60" x2="806" y2="30" stroke="#000" stroke-width="3"/><circle cx="806" cy="27" r="3" fill="#e11d1d"/>';
+    $city .= '</svg>';
+  ?>
+  <div class="cityline"><div class="cityline-track"><?= $city . $city ?></div></div>
   <div class="wrap">
     <div>
       <p class="kicker"><?= h(ARTIST_TAGLINE) ?></p>
