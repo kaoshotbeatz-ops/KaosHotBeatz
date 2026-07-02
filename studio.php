@@ -54,9 +54,11 @@ $MELODY = [
         <div class="xl-lcd-scan"></div>
         <div class="xl-lcd-row1">
           <span class="xl-brand">KAOS<em>XL</em></span>
+          <span class="xl-qtz" id="lcdQtz">QTZ 1/16</span>
           <span class="xl-dot"></span>
         </div>
         <div class="xl-lcd-big"><span id="lcdBpm">090</span><small>BPM</small><span id="lcdBar">1:1</span></div>
+        <canvas class="xl-scope" id="scope" width="600" height="60"></canvas>
         <div class="xl-lcd-status" id="lcdStatus">TAP TO LOAD KIT</div>
       </div>
       <div class="lab-top">
@@ -72,6 +74,14 @@ $MELODY = [
         <button class="btn sm bank on" id="bankDrums" data-bank="0">🥁 DRUMS</button>
         <button class="btn ghost sm bank" id="bankMelody" data-bank="1">🎹 SOUL MELODY</button>
         <span class="muted" style="font-size:.8rem;margin-left:auto">mix both into one loop — hits keep their own bank</span>
+      </div>
+      <div class="bank-row">
+        <span class="mono muted" style="font-size:.72rem">QUANTIZE</span>
+        <button class="btn ghost sm qz" data-qz="0">OFF</button>
+        <button class="btn ghost sm qz" data-qz="4">1/4</button>
+        <button class="btn ghost sm qz" data-qz="8">1/8</button>
+        <button class="btn sm qz on" data-qz="16">1/16</button>
+        <span class="muted" style="font-size:.8rem;margin-left:auto">snaps every recorded hit onto the beat grid</span>
       </div>
       <div class="pads" id="pads">
         <?php foreach ($PADS as $i => $p): ?>
@@ -203,7 +213,15 @@ var bpm=90, recording=false, events=[], recStart=0, playing=false, loopTimers=[]
 var BARS=4, BEATS_PER_BAR=4, COUNTIN_BARS=2;
 function beatDur(){ return 60/bpm; }
 function loopDur(){ return beatDur()*BEATS_PER_BAR*BARS; }
-function hit(i){ var now=ctx().currentTime; trigger(curBank,i,now); if(recording){ events.push({i:i,bank:curBank,t:(now-recStart)%loopDur()}); } }
+var quantizeDiv=16; // 0=off, 4=quarter, 8=eighth, 16=sixteenth
+function quantize(t){
+  if(!quantizeDiv) return t;
+  var stepDur=beatDur()/(quantizeDiv/4);
+  var snapped=Math.round(t/stepDur)*stepDur;
+  var d=loopDur(); if(snapped>=d) snapped-=d; if(snapped<0) snapped=0;
+  return snapped;
+}
+function hit(i){ var now=ctx().currentTime; trigger(curBank,i,now); if(recording){ var raw=(now-recStart)%loopDur(); events.push({i:i,bank:curBank,t:quantize(raw)}); } }
 padEls.forEach(function(el){ var i=+el.getAttribute('data-i');
   el.addEventListener('mousedown',function(e){ e.preventDefault(); hit(i); });
   el.addEventListener('touchstart',function(e){ e.preventDefault(); hit(i); },{passive:false});
@@ -219,6 +237,32 @@ function setBank(b){ curBank=b; bankBtns.forEach(function(btn,i){ btn.classList.
 }
 bankBtns[0].addEventListener('click',function(){ setBank(0); });
 bankBtns[1].addEventListener('click',function(){ setBank(1); });
+
+// ---- quantize switch ----
+var qzBtns=[].slice.call(document.querySelectorAll('.qz'));
+qzBtns.forEach(function(btn){ btn.addEventListener('click',function(){
+  quantizeDiv=+btn.getAttribute('data-qz');
+  qzBtns.forEach(function(b){ b.classList.toggle('on', b===btn); });
+  var lbl=quantizeDiv?('1/'+quantizeDiv):'OFF';
+  var lq=document.getElementById('lcdQtz'); if(lq) lq.textContent='QTZ '+lbl;
+  setStatus('quantize: '+lbl);
+}); });
+
+// ---- oscilloscope: draws the live master waveform, reacts to every hit ----
+var scopeEl=document.getElementById('scope'), scopeCtx=scopeEl.getContext('2d');
+var _wbuf=new Uint8Array(256);
+function drawScope(){
+  var w=scopeEl.width, h=scopeEl.height;
+  scopeCtx.clearRect(0,0,w,h);
+  if(masterAn){
+    masterAn.getByteTimeDomainData(_wbuf);
+    scopeCtx.beginPath(); scopeCtx.lineWidth=2; scopeCtx.strokeStyle='#1e2a12';
+    for(var i=0;i<_wbuf.length;i++){ var x=(i/_wbuf.length)*w; var y=(_wbuf[i]/255)*h; if(i===0) scopeCtx.moveTo(x,y); else scopeCtx.lineTo(x,y); }
+    scopeCtx.stroke();
+  }
+  requestAnimationFrame(drawScope);
+}
+drawScope();
 
 // ---- metronome click (synth — no sample needed) ----
 function metroClick(t,accent){ var c=ctx(),o=c.createOscillator(),g=c.createGain(); o.type='square'; o.frequency.value=accent?1600:1100; g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.05); o.connect(g).connect(master); o.start(t); o.stop(t+0.06); }
