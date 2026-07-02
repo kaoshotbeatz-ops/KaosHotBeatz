@@ -85,6 +85,13 @@ $MELODY = [
         <button class="btn sm qz on" data-qz="16">1/16</button>
         <span class="muted" style="font-size:.8rem;margin-left:auto">snaps every recorded hit onto the beat grid</span>
       </div>
+      <div class="bank-row">
+        <span class="mono muted" style="font-size:.72rem">BARS</span>
+        <button class="btn ghost sm" id="barsMinus">−</button>
+        <span class="mono" id="barsVal" style="min-width:26px;text-align:center;color:var(--gold);font-weight:800">4</span>
+        <button class="btn ghost sm" id="barsPlus">+</button>
+        <span class="muted" style="font-size:.8rem;margin-left:auto">1–16 bars — go longer than 4 for a full pattern</span>
+      </div>
       <div class="pads" id="pads">
         <?php foreach ($PADS as $i => $p): ?>
         <div class="pad" data-i="<?= $i ?>"><span class="nm" data-drum="<?= h($p[0]) ?>" data-mel="<?= h($MELODY[$i][0]) ?>"><?= h($p[0]) ?></span><span class="k"><?= h($p[1]) ?></span></div>
@@ -93,6 +100,26 @@ $MELODY = [
       <div class="progress"><i id="prog"></i></div>
     </div>
     <p class="muted" style="text-align:center;margin-top:14px;font-size:.85rem">Keys: 1 2 3 4 · Q W E R · A S D F · Z X C V</p>
+
+    <div class="machine" style="margin-top:26px;background:linear-gradient(180deg,#1c1c1f,#141416)">
+      <h3 style="margin:0 0 6px">Sequencer</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:14px">Every pad is its own track. Mute a track without erasing it — see the whole pattern laid out across the bars, with a playhead moving through it live.</p>
+      <div class="seq-grid" id="seqGrid">
+        <div class="seq-playhead" id="seqPlayhead"></div>
+        <?php
+          $tracks = [];
+          foreach ($PADS as $i => $p) $tracks[] = [0, $i, $p[0]];
+          foreach ($MELODY as $i => $p) $tracks[] = [1, $i, $p[0]];
+          foreach ($tracks as $tr): list($tb,$ti,$tl) = $tr;
+        ?>
+        <div class="seq-row">
+          <span class="seq-label mono"><?= h($tl) ?></span>
+          <button class="seq-mute" data-bank="<?= $tb ?>" data-i="<?= $ti ?>">M</button>
+          <div class="seq-lane<?= $tb===1?' bank1':'' ?>" data-bank="<?= $tb ?>" data-i="<?= $ti ?>"></div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
 
     <div class="machine xl-skin" style="margin-top:26px">
       <h3 style="margin:0 0 6px">Turntable &amp; Mixer</h3>
@@ -307,10 +334,42 @@ function hit(i){
     var removed=before-events.length;
     flash(i);
     setStatus(removed ? ('erased '+removed+' hit'+(removed>1?'s':'')+' from that pad') : 'no hits on that pad to erase');
+    renderSeq();
     return;
   }
-  var now=ctx().currentTime; trigger(curBank,i,now); if(recording){ var raw=(now-recStart)%loopDur(); events.push({i:i,bank:curBank,t:quantize(raw)}); }
+  var now=ctx().currentTime; trigger(curBank,i,now); if(recording){ var raw=(now-recStart)%loopDur(); events.push({i:i,bank:curBank,t:quantize(raw)}); renderSeq(); }
 }
+
+// ---- sequencer screen: renders every recorded hit as a block on its track's lane ----
+var mutedTracks={};
+function renderSeq(){
+  var lanes=[].slice.call(document.querySelectorAll('.seq-lane'));
+  lanes.forEach(function(lane){ lane.innerHTML=''; });
+  var d=loopDur();
+  events.forEach(function(ev){
+    var lane=document.querySelector('.seq-lane[data-bank="'+(ev.bank||0)+'"][data-i="'+ev.i+'"]');
+    if(!lane) return;
+    var b=document.createElement('div'); b.className='seq-block'; b.style.left=((ev.t/d)*100)+'%';
+    lane.appendChild(b);
+  });
+}
+[].slice.call(document.querySelectorAll('.seq-mute')).forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var key=btn.getAttribute('data-bank')+':'+btn.getAttribute('data-i');
+    var on=btn.classList.toggle('on');
+    if(on) mutedTracks[key]=true; else delete mutedTracks[key];
+  });
+});
+
+// ---- bars +/- (1–16, go longer than 4) ----
+function setBars(n){
+  BARS=Math.max(1,Math.min(16,n));
+  document.getElementById('barsVal').textContent=BARS;
+  if(playing){ stopPlay(); setStatus(BARS+' bars — hit PLAY to loop it'); }
+  renderSeq();
+}
+document.getElementById('barsMinus').addEventListener('click',function(){ setBars(BARS-1); });
+document.getElementById('barsPlus').addEventListener('click',function(){ setBars(BARS+1); });
 padEls.forEach(function(el){ var i=+el.getAttribute('data-i');
   el.addEventListener('mousedown',function(e){ e.preventDefault(); hit(i); });
   el.addEventListener('touchstart',function(e){ e.preventDefault(); hit(i); },{passive:false});
@@ -389,11 +448,12 @@ function countIn(cb){
 
 var start0=0;
 function startPlay(){ if(playing) return; playing=true; var start=ctx().currentTime; start0=start; var d=loopDur();
-  function schedule(){ events.forEach(function(ev){ loopTimers.push(setTimeout(function(){ trigger(ev.bank||0,ev.i); }, ev.t*1000)); }); loopTimers.push(setTimeout(schedule, d*1000)); }
+  function schedule(){ events.forEach(function(ev){ var key=(ev.bank||0)+':'+ev.i; if(mutedTracks[key]) return; loopTimers.push(setTimeout(function(){ trigger(ev.bank||0,ev.i); }, ev.t*1000)); }); loopTimers.push(setTimeout(schedule, d*1000)); }
   if(!recording) recStart=start; schedule();
   function tick(){ if(!playing) return; var elapsed=(ctx().currentTime-start0)%d; var el=elapsed/d; document.getElementById('prog').style.width=(el*100)+'%';
     var beatPos=Math.floor(elapsed/beatDur()); var bar=Math.floor(beatPos/BEATS_PER_BAR)+1, beat=(beatPos%BEATS_PER_BAR)+1;
     var lb=document.getElementById('lcdBar'); if(lb) lb.textContent=bar+':'+beat;
+    var sp=document.getElementById('seqPlayhead'); if(sp) sp.style.left=(el*100)+'%';
     progRAF=requestAnimationFrame(tick); } tick();
 }
 function stopPlay(){ playing=false; counting=false; loopTimers.forEach(clearTimeout); loopTimers=[]; if(progRAF) cancelAnimationFrame(progRAF); document.getElementById('prog').style.width='0'; }
@@ -410,7 +470,7 @@ document.getElementById('play').addEventListener('click',function(){
   stopPlay(); countIn(function(){ startPlay(); setStatus('looping your 4-bar beat'); });
 });
 document.getElementById('stop').addEventListener('click',function(){ stopPlay(); recording=false; document.getElementById('rec').classList.remove('on'); setStatus('stopped'); });
-document.getElementById('clear').addEventListener('click',function(){ stopPlay(); events=[]; recording=false; document.getElementById('rec').classList.remove('on'); setStatus('cleared'); });
+document.getElementById('clear').addEventListener('click',function(){ stopPlay(); events=[]; recording=false; document.getElementById('rec').classList.remove('on'); setStatus('cleared'); renderSeq(); });
 document.getElementById('bpm').addEventListener('input',function(){ bpm=+this.value; document.getElementById('bpmv').textContent=bpm; var lb=document.getElementById('lcdBpm'); if(lb) lb.textContent=(bpm<100?'0':'')+bpm; });
 document.getElementById('lcdBpm').textContent='090';
 
