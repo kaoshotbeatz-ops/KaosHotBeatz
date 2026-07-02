@@ -5,6 +5,14 @@
 define('SITE_NAME',  'KAOS HOT BEATZ');
 define('SITE_EMAIL', 'beats@kaoshotbeatz.com');   // where sales/booking notices go
 
+// Artist identity (shown across the site)
+define('ARTIST_TAGLINE', 'NY · Long Island Hip-Hop Producer');
+define('ARTIST_GENRES',  'Soul · Hip-Hop · Boom Bap · Raw · Gospel');
+define('SUNO_URL',       'https://suno.com/@kaoshotbeatz');
+define('INSTAGRAM_URL',  'https://instagram.com/kaoshotbeatz');
+define('STAT_PLAYS',     '36K+');   // update as it grows
+define('STAT_SONGS',     '25+');
+
 // Admin panel password (used at /admin/)
 define('ADMIN_PASS', 'change-me-to-something-strong');
 

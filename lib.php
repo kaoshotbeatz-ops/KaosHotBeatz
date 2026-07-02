@@ -22,6 +22,19 @@ if (!defined('PAYPAL_ENV'))    define('PAYPAL_ENV', 'sandbox');          // sand
 if (!defined('PAYPAL_CLIENT')) define('PAYPAL_CLIENT', '');              // set in config.php
 if (!defined('PAYPAL_SECRET')) define('PAYPAL_SECRET', '');              // set in config.php
 if (!defined('DEPOSIT_AMOUNT'))define('DEPOSIT_AMOUNT', 50.00);          // studio session deposit
+if (!defined('ARTIST_TAGLINE'))define('ARTIST_TAGLINE', 'NY · Long Island Hip-Hop Producer');
+if (!defined('ARTIST_GENRES')) define('ARTIST_GENRES', 'Soul · Hip-Hop · Boom Bap · Raw · Gospel');
+if (!defined('SUNO_URL'))       define('SUNO_URL', 'https://suno.com/@kaoshotbeatz');
+if (!defined('INSTAGRAM_URL'))  define('INSTAGRAM_URL', 'https://instagram.com/kaoshotbeatz');
+if (!defined('STAT_PLAYS'))     define('STAT_PLAYS', '36K+');
+if (!defined('STAT_SONGS'))     define('STAT_SONGS', '25+');
+
+// Extract a Suno song ID from a full URL or bare ID (for iframe embeds).
+function suno_id($v) {
+    $v = trim($v);
+    if (preg_match('~/song/([a-z0-9-]+)~i', $v, $m)) return $m[1];
+    return preg_replace('~[^a-z0-9-]~i', '', $v);
+}
 
 // ---- Data helpers (JSON files under /data, protected by .htaccess) ----
 function khb_path($name) { return __DIR__ . '/data/' . $name . '.json'; }

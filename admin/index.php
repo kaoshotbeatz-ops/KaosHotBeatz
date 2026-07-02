@@ -48,6 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && acsrf_ok()) {
         foreach ($bk as &$b) if ($b['id'] === $_POST['id']) $b['status'] = $_POST['status'];
         unset($b); khb_save('bookings', $bk); $notice = 'Booking updated.'; $tab = 'bookings';
     }
+    if ($act === 'save_music') {
+        $music = khb_load('music');
+        $music[] = ['id' => khb_uuid(), 'title' => trim($_POST['title']), 'suno' => trim($_POST['suno']),
+                    'tags' => trim($_POST['tags']), 'ts' => time()];
+        khb_save('music', $music); $notice = 'Track added.'; $tab = 'music';
+    }
+    if ($act === 'del_music') {
+        khb_save('music', array_values(array_filter(khb_load('music'), fn($m) => $m['id'] !== $_POST['id'])));
+        $notice = 'Track removed.'; $tab = 'music';
+    }
     if ($act === 'save_gear') {
         $gear = khb_load('gear');
         $g = ['id' => khb_uuid(), 'name' => trim($_POST['name']), 'note' => trim($_POST['note']), 'img' => ''];
@@ -67,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && acsrf_ok()) {
 }
 
 $beats = khb_load('beats'); $bookings = khb_load('bookings'); $orders = khb_load('orders');
-$members = khb_load('members'); $inquiries = khb_load('inquiries'); $gear = khb_load('gear');
+$members = khb_load('members'); $inquiries = khb_load('inquiries'); $gear = khb_load('gear'); $music = khb_load('music');
 usort($bookings, fn($a,$b)=>($b['ts']??0)<=>($a['ts']??0));
 usort($orders, fn($a,$b)=>($b['ts']??0)<=>($a['ts']??0));
 $revenue = array_sum(array_column($orders, 'total'));
@@ -85,7 +95,7 @@ function tab_link($t,$cur,$label){ $on=$t===$cur?'style="color:var(--amber);bord
   <?php tab_link('dash',$tab,'Dashboard'); tab_link('beats',$tab,'Beats ('.count($beats).')');
   tab_link('bookings',$tab,'Bookings ('.count($bookings).')'); tab_link('orders',$tab,'Sales ('.count($orders).')');
   tab_link('members',$tab,'Members ('.count($members).')'); tab_link('inquiries',$tab,'Inbox ('.count($inquiries).')');
-  tab_link('gear',$tab,'Gear'); ?>
+  tab_link('music',$tab,'Music ('.count($music).')'); tab_link('gear',$tab,'Gear'); ?>
 </div>
 
 <?php if ($tab === 'dash'): ?>
@@ -183,6 +193,27 @@ function tab_link($t,$cur,$label){ $on=$t===$cur?'style="color:var(--amber);bord
     <p><?= nl2br(h($i['message'])) ?></p>
   </div>
   <?php endforeach; ?>
+
+<?php elseif ($tab === 'music'): ?>
+  <div class="grid c2" style="align-items:start">
+    <div><h2>Add a Suno track</h2>
+      <form method="post" class="card"><?= acsrf_field() ?><input type="hidden" name="action" value="save_music">
+        <label>Title</label><input name="title" placeholder="e.g. Sunday Morning Soul" required>
+        <label>Suno link or song URL</label><input name="suno" placeholder="https://suno.com/song/xxxxxxxx" required>
+        <label>Tags (optional)</label><input name="tags" placeholder="boom bap, gospel">
+        <button class="btn block" style="margin-top:14px">Add track</button>
+      </form>
+      <p class="muted" style="font-size:.82rem;margin-top:10px">On Suno, open a song → Share → copy link. Paste the full URL; the site pulls the embed automatically.</p>
+    </div>
+    <div><h2>On the site (<?= count($music) ?>)</h2>
+      <?php foreach ($music as $m): ?>
+      <div class="card" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div><strong><?= h($m['title']) ?></strong><br><span class="muted mono" style="font-size:.78rem"><?= h(suno_id($m['suno'])) ?></span></div>
+        <form method="post"><?= acsrf_field() ?><input type="hidden" name="action" value="del_music"><input type="hidden" name="id" value="<?= h($m['id']) ?>"><button class="btn ghost sm">✕</button></form>
+      </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
 
 <?php elseif ($tab === 'gear'): ?>
   <div class="grid c2" style="align-items:start">

@@ -6,8 +6,9 @@ function khb_header($title, $active = '') {
     $m = current_member();
     $cartCount = count(cart());
     $nav = [
+        'listen.php'  => 'Listen',
         'beats.php'   => 'Beats',
-        'book.php'    => 'Book a Session',
+        'book.php'    => 'Book',
         'about.php'   => 'The Collection',
         'contact.php' => 'Contact',
     ];
@@ -35,7 +36,8 @@ function khb_footer() {
     echo '</main><footer class="site-foot"><div class="wrap">';
     echo '<div class="foot-cols">';
     echo '<div><span class="brand"><span class="brand-kaos">KAOS</span> HOT BEATZ</span>';
-    echo '<p class="muted">MPC-crafted instrumentals & studio sessions.</p></div>';
+    echo '<p class="muted">' . h(ARTIST_TAGLINE) . '<br>' . h(ARTIST_GENRES) . '</p>';
+    echo '<p style="margin-top:10px"><a href="' . h(SUNO_URL) . '" target="_blank" rel="noopener">Suno ↗</a> &nbsp; <a href="' . h(INSTAGRAM_URL) . '" target="_blank" rel="noopener">Instagram ↗</a></p></div>';
     echo '<div><h4>Shop</h4><a href="/beats.php">Beats</a><a href="/cart.php">Cart</a><a href="/member/account.php">My Purchases</a></div>';
     echo '<div><h4>Studio</h4><a href="/book.php">Book a Session</a><a href="/about.php">The Collection</a><a href="/contact.php">Contact</a></div>';
     echo '<div><h4>Account</h4><a href="/member/login.php">Sign In</a><a href="/member/register.php">Create Account</a><a href="/licensing.php">Licensing</a></div>';
