@@ -80,22 +80,84 @@ $MELODY = [
       <div class="progress"><i id="prog"></i></div>
     </div>
     <p class="muted" style="text-align:center;margin-top:14px;font-size:.85rem">Keys: 1 2 3 4 · Q W E R · A S D F · Z X C V</p>
+
+    <div class="machine xl-skin" style="margin-top:26px">
+      <h3 style="margin:0 0 6px">Turntable &amp; Mixer</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:16px">Drag the vinyl to scratch it. Hit ▶ Spin for straight playback. Watch the meters bounce with your beat.</p>
+      <div class="deck-mixer">
+        <div class="deck">
+          <div class="vinyl" id="vinyl"><div class="vlabel">CREAM</div></div>
+          <div class="deck-controls">
+            <button class="btn ghost sm" id="ttPlay">▶ Spin</button>
+            <button class="btn ghost sm" id="ttStop">■ Stop</button>
+          </div>
+        </div>
+        <div class="mixer">
+          <div class="strip"><label>DRUMS</label><div class="meter"><i id="mDrums"></i></div><input type="range" orient="vertical" id="gDrums" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip"><label>MELODY</label><div class="meter"><i id="mMelody"></i></div><input type="range" orient="vertical" id="gMelody" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip"><label>KEYS</label><div class="meter"><i id="mKeys"></i></div><input type="range" orient="vertical" id="gKeys" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip"><label>TT</label><div class="meter"><i id="mTT"></i></div><input type="range" orient="vertical" id="gTT" min="0" max="1.5" step="0.01" value="1"></div>
+          <div class="strip master"><label>MASTER</label><div class="meter"><i id="mMaster"></i></div><input type="range" orient="vertical" id="gMaster" min="0" max="1.5" step="0.01" value="1"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="machine xl-skin" style="margin-top:26px">
+      <h3 style="margin:0 0 6px">Play the Keys</h3>
+      <div class="key-top">
+        <label class="mono muted" style="font-size:.8rem">SOUND</label>
+        <select id="voiceSel">
+          <option value="0">Rhodes</option>
+          <option value="1">Chord</option>
+          <option value="2">Stab</option>
+          <option value="3">Bells</option>
+        </select>
+      </div>
+      <div class="keys" id="keys">
+        <?php $NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B','C']; foreach ($NOTES as $semi => $n): ?>
+        <div class="key<?= (strpos($n,'#')!==false)?' sharp':'' ?>" data-semi="<?= $semi ?>"><?= h($n) ?></div>
+        <?php endforeach; ?>
+      </div>
+      <p class="muted" style="text-align:center;margin-top:10px;font-size:.85rem">Tap the keys to play — switch the sound above.</p>
+    </div>
   </div>
 </section>
 
 <script>
 (function(){
 var AC=null, master=null, ready=false, curBank=0;
+var drumGain=null, melodyGain=null, keysGain=null, ttGain=null;
+var masterAn=null, drumAn=null, melodyAn=null, keysAn=null, ttAn=null;
 var buffers=[new Array(16), new Array(16)]; // [0]=drums, [1]=soul melody
 var KITS=[{dir:'drums',done:0,total:16},{dir:'melody',done:0,total:16}];
-function ctx(){ if(!AC){ AC=new (window.AudioContext||window.webkitAudioContext)(); master=AC.createGain(); master.gain.value=1.0; master.connect(AC.destination); } if(AC.state==='suspended') AC.resume(); return AC; }
+function mkAnalyser(c,src){ var a=c.createAnalyser(); a.fftSize=256; src.connect(a); return a; }
+function ctx(){
+  if(!AC){
+    AC=new (window.AudioContext||window.webkitAudioContext)();
+    master=AC.createGain(); master.gain.value=1.0;
+    drumGain=AC.createGain(); melodyGain=AC.createGain(); keysGain=AC.createGain(); ttGain=AC.createGain();
+    drumGain.connect(master); melodyGain.connect(master); keysGain.connect(master); ttGain.connect(master);
+    master.connect(AC.destination);
+    drumAn=mkAnalyser(AC,drumGain); melodyAn=mkAnalyser(AC,melodyGain); keysAn=mkAnalyser(AC,keysGain); ttAn=mkAnalyser(AC,ttGain);
+    masterAn=mkAnalyser(AC,master);
+    startMeters();
+  }
+  if(AC.state==='suspended') AC.resume();
+  return AC;
+}
 function setStatus(s){ document.getElementById('status').textContent=s; var l=document.getElementById('lcdStatus'); if(l) l.textContent=s.toUpperCase(); }
+
+// ---- live level meters (mixer) ----
+var _mbuf=new Uint8Array(256);
+function meterLevel(an){ if(!an) return 0; an.getByteTimeDomainData(_mbuf); var sum=0; for(var i=0;i<_mbuf.length;i++){ var v=(_mbuf[i]-128)/128; sum+=v*v; } return Math.sqrt(sum/_mbuf.length); }
+function setMeter(id,lvl){ var el=document.getElementById(id); if(el) el.style.height=Math.min(100,lvl*280)+'%'; }
+function startMeters(){ function loop(){ setMeter('mDrums',meterLevel(drumAn)); setMeter('mMelody',meterLevel(melodyAn)); setMeter('mKeys',meterLevel(keysAn)); setMeter('mTT',meterLevel(ttAn)); setMeter('mMaster',meterLevel(masterAn)); requestAnimationFrame(loop); } loop(); }
 
 // ---- fallback synth (used only if a sample fails to load) ----
 var _nb=null; function noise(){ if(_nb) return _nb; var c=ctx(),b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0); for(var i=0;i<d.length;i++) d[i]=Math.random()*2-1; _nb=b; return b; }
-function synth(i,t){ var c=ctx(); if(i===2||i===3||i===5||i===6||i===7||i===10||i===11){ var s=c.createBufferSource(); s.buffer=noise(); var g=c.createGain(),f=c.createBiquadFilter(); f.type='highpass'; f.frequency.value=(i===2||i===3||i===10)?1200:7000; var dur=(i===6)?0.3:0.05; g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur); s.connect(f).connect(g).connect(master); s.start(t); s.stop(t+dur+0.05); } else { var o=c.createOscillator(),g2=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(45,t+0.4); g2.gain.setValueAtTime(1,t); g2.gain.exponentialRampToValueAtTime(0.001,t+0.5); o.connect(g2).connect(master); o.start(t); o.stop(t+0.55); } }
+function synth(i,t){ var c=ctx(); if(i===2||i===3||i===5||i===6||i===7||i===10||i===11){ var s=c.createBufferSource(); s.buffer=noise(); var g=c.createGain(),f=c.createBiquadFilter(); f.type='highpass'; f.frequency.value=(i===2||i===3||i===10)?1200:7000; var dur=(i===6)?0.3:0.05; g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur); s.connect(f).connect(g).connect(drumGain); s.start(t); s.stop(t+dur+0.05); } else { var o=c.createOscillator(),g2=c.createGain(); o.type='sine'; o.frequency.setValueAtTime(120,t); o.frequency.exponentialRampToValueAtTime(45,t+0.4); g2.gain.setValueAtTime(1,t); g2.gain.exponentialRampToValueAtTime(0.001,t+0.5); o.connect(g2).connect(drumGain); o.start(t); o.stop(t+0.55); } }
 
-function playSample(bank,i,when){ var b=buffers[bank][i]; if(!b){ if(bank===0) synth(i,when||ctx().currentTime); return; } var s=ctx().createBufferSource(); s.buffer=b; var g=ctx().createGain(); g.gain.value=0.95; s.connect(g).connect(master); s.start(when||ctx().currentTime); }
+function playSample(bank,i,when){ var b=buffers[bank][i]; if(!b){ if(bank===0) synth(i,when||ctx().currentTime); return; } var s=ctx().createBufferSource(); s.buffer=b; var g=ctx().createGain(); g.gain.value=0.95; s.connect(g).connect(bank===0?drumGain:melodyGain); s.start(when||ctx().currentTime); }
 var padEls=[].slice.call(document.querySelectorAll('.pad'));
 function flash(i){ var el=padEls[i]; if(!el) return; el.classList.add('hit'); setTimeout(function(){el.classList.remove('hit');},90); }
 function trigger(bank,i,when){ playSample(bank,i,when); flash(i); }
@@ -194,6 +256,58 @@ document.getElementById('stop').addEventListener('click',function(){ stopPlay();
 document.getElementById('clear').addEventListener('click',function(){ stopPlay(); events=[]; recording=false; document.getElementById('rec').classList.remove('on'); setStatus('cleared'); });
 document.getElementById('bpm').addEventListener('input',function(){ bpm=+this.value; document.getElementById('bpmv').textContent=bpm; var lb=document.getElementById('lcdBpm'); if(lb) lb.textContent=(bpm<100?'0':'')+bpm; });
 document.getElementById('lcdBpm').textContent='090';
+
+// ---- mixer faders ----
+function bindFader(id,getNode){ var el=document.getElementById(id); if(!el) return; el.addEventListener('input',function(){ ctx(); var n=getNode(); if(n) n.gain.value=+this.value; }); }
+bindFader('gDrums',function(){return drumGain;});
+bindFader('gMelody',function(){return melodyGain;});
+bindFader('gKeys',function(){return keysGain;});
+bindFader('gTT',function(){return ttGain;});
+bindFader('gMaster',function(){return master;});
+
+// ---- turntable: scratch (drag the vinyl) + spin (straight playback) ----
+var vinylEl=document.getElementById('vinyl');
+var ttScratchSrc=null, ttLoopSrc=null, ttPlayhead=0, ttDragging=false, ttLastAngle=0;
+function ttBuffer(){ return buffers[1][0]; } // scratches the "Cream" soul loop — the artist's own sample
+function angleAt(x,y){ var r=vinylEl.getBoundingClientRect(); var cx=r.left+r.width/2, cy=r.top+r.height/2; return Math.atan2(y-cy,x-cx); }
+function scratchAt(offset,rate){
+  var buf=ttBuffer(); if(!buf) return;
+  ctx();
+  if(ttScratchSrc){ try{ ttScratchSrc.stop(); }catch(e){} }
+  var s=AC.createBufferSource(); s.buffer=buf; s.playbackRate.value=Math.max(-3.5,Math.min(3.5,rate));
+  s.connect(ttGain); s.start(0, Math.max(0,Math.min(buf.duration-0.05,offset)));
+  ttScratchSrc=s; setTimeout(function(){ try{ s.stop(); }catch(e){} },100);
+}
+function ttDown(x,y){ if(!ttBuffer()){ setStatus('still loading…'); return; } ttDragging=true; ttLastAngle=angleAt(x,y); vinylEl.classList.remove('spin'); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } }
+function ttMove(x,y){ if(!ttDragging) return; var buf=ttBuffer(); if(!buf) return; var a=angleAt(x,y); var d=a-ttLastAngle; if(d>Math.PI) d-=2*Math.PI; if(d<-Math.PI) d+=2*Math.PI; ttLastAngle=a;
+  var dt=d*(buf.duration/(2*Math.PI))*2.4; ttPlayhead=Math.max(0,Math.min(buf.duration-0.05,ttPlayhead+dt));
+  var rate=dt/0.016; if(Math.abs(rate)<0.15) rate=rate<0?-0.15:0.15; scratchAt(ttPlayhead,rate); }
+function ttUp(){ ttDragging=false; }
+vinylEl.addEventListener('mousedown',function(e){ e.preventDefault(); ttDown(e.clientX,e.clientY); });
+document.addEventListener('mousemove',function(e){ ttMove(e.clientX,e.clientY); });
+document.addEventListener('mouseup',ttUp);
+vinylEl.addEventListener('touchstart',function(e){ e.preventDefault(); var t=e.touches[0]; ttDown(t.clientX,t.clientY); },{passive:false});
+vinylEl.addEventListener('touchmove',function(e){ e.preventDefault(); var t=e.touches[0]; ttMove(t.clientX,t.clientY); },{passive:false});
+vinylEl.addEventListener('touchend',ttUp);
+document.getElementById('ttPlay').addEventListener('click',function(){ var buf=ttBuffer(); if(!buf){ setStatus('still loading…'); return; } ctx(); if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} } var s=AC.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(ttGain); s.start(0); ttLoopSrc=s; vinylEl.classList.add('spin'); setStatus('turntable spinning'); });
+document.getElementById('ttStop').addEventListener('click',function(){ if(ttLoopSrc){ try{ttLoopSrc.stop();}catch(e){} ttLoopSrc=null; } vinylEl.classList.remove('spin'); });
+
+// ---- keyboard: pitch-shifted one-shots, switchable voice ----
+var VOICE_IDX=[11,12,13,14]; // melody bank indices: Rhodes stab, Chord shot, Stab, Bells
+var curVoice=0;
+document.getElementById('voiceSel').addEventListener('change',function(){ curVoice=+this.value; });
+function playKey(semi,el){
+  var idx=VOICE_IDX[curVoice]; var buf=buffers[1][idx];
+  if(!buf){ setStatus('still loading…'); return; }
+  ctx(); var s=AC.createBufferSource(); s.buffer=buf; s.playbackRate.value=Math.pow(2,semi/12);
+  var g=AC.createGain(); g.gain.value=1; s.connect(g).connect(keysGain); s.start(0);
+  if(el){ el.classList.add('active'); setTimeout(function(){ el.classList.remove('active'); },160); }
+}
+[].slice.call(document.querySelectorAll('.key')).forEach(function(el){
+  var semi=+el.getAttribute('data-semi');
+  el.addEventListener('mousedown',function(e){ e.preventDefault(); playKey(semi,el); });
+  el.addEventListener('touchstart',function(e){ e.preventDefault(); playKey(semi,el); },{passive:false});
+});
 })();
 </script>
 <?php khb_footer(); ?>
