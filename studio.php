@@ -41,8 +41,17 @@ $PADS = [
     <h2>MPC Drum Machine</h2>
     <p class="muted">Real KAOS drum kit. Tap the pads. Hit <strong>REC</strong>, finger-drum a loop, then <strong>PLAY</strong> — you made a beat. Works on iPad &amp; phone (turn the ringer up / unmute).</p>
 
-    <div class="machine">
+    <div class="machine xl-skin">
       <div id="unlock"><div class="p">▶</div><div class="t" id="unlockTxt">Tap to load the kit</div></div>
+      <div class="xl-lcd">
+        <div class="xl-lcd-scan"></div>
+        <div class="xl-lcd-row1">
+          <span class="xl-brand">KAOS<em>XL</em></span>
+          <span class="xl-dot"></span>
+        </div>
+        <div class="xl-lcd-big"><span id="lcdBpm">090</span><small>BPM</small><span id="lcdBar">1:1</span></div>
+        <div class="xl-lcd-status" id="lcdStatus">TAP TO LOAD KIT</div>
+      </div>
       <div class="lab-top">
         <button class="btn sm rec" id="rec">● REC</button>
         <button class="btn ghost sm" id="play">▶ PLAY</button>
@@ -66,7 +75,7 @@ $PADS = [
 (function(){
 var AC=null, master=null, buffers=new Array(16), ready=false;
 function ctx(){ if(!AC){ AC=new (window.AudioContext||window.webkitAudioContext)(); master=AC.createGain(); master.gain.value=1.0; master.connect(AC.destination); } if(AC.state==='suspended') AC.resume(); return AC; }
-function setStatus(s){ document.getElementById('status').textContent=s; }
+function setStatus(s){ document.getElementById('status').textContent=s; var l=document.getElementById('lcdStatus'); if(l) l.textContent=s.toUpperCase(); }
 
 // ---- fallback synth (used only if a sample fails to load) ----
 var _nb=null; function noise(){ if(_nb) return _nb; var c=ctx(),b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0); for(var i=0;i<d.length;i++) d[i]=Math.random()*2-1; _nb=b; return b; }
@@ -121,7 +130,10 @@ var start0=0;
 function startPlay(){ if(playing) return; playing=true; var start=ctx().currentTime; start0=start; var d=loopDur();
   function schedule(){ events.forEach(function(ev){ loopTimers.push(setTimeout(function(){ trigger(ev.i); }, ev.t*1000)); }); loopTimers.push(setTimeout(schedule, d*1000)); }
   if(!recording) recStart=start; schedule();
-  function tick(){ if(!playing) return; var el=((ctx().currentTime-start0)%d)/d; document.getElementById('prog').style.width=(el*100)+'%'; progRAF=requestAnimationFrame(tick); } tick();
+  function tick(){ if(!playing) return; var elapsed=(ctx().currentTime-start0)%d; var el=elapsed/d; document.getElementById('prog').style.width=(el*100)+'%';
+    var beatPos=Math.floor(elapsed/beatDur()); var bar=Math.floor(beatPos/BEATS_PER_BAR)+1, beat=(beatPos%BEATS_PER_BAR)+1;
+    var lb=document.getElementById('lcdBar'); if(lb) lb.textContent=bar+':'+beat;
+    progRAF=requestAnimationFrame(tick); } tick();
 }
 function stopPlay(){ playing=false; counting=false; loopTimers.forEach(clearTimeout); loopTimers=[]; if(progRAF) cancelAnimationFrame(progRAF); document.getElementById('prog').style.width='0'; }
 document.getElementById('rec').addEventListener('click',function(){
@@ -138,7 +150,8 @@ document.getElementById('play').addEventListener('click',function(){
 });
 document.getElementById('stop').addEventListener('click',function(){ stopPlay(); recording=false; document.getElementById('rec').classList.remove('on'); setStatus('stopped'); });
 document.getElementById('clear').addEventListener('click',function(){ stopPlay(); events=[]; recording=false; document.getElementById('rec').classList.remove('on'); setStatus('cleared'); });
-document.getElementById('bpm').addEventListener('input',function(){ bpm=+this.value; document.getElementById('bpmv').textContent=bpm; });
+document.getElementById('bpm').addEventListener('input',function(){ bpm=+this.value; document.getElementById('bpmv').textContent=bpm; var lb=document.getElementById('lcdBpm'); if(lb) lb.textContent=(bpm<100?'0':'')+bpm; });
+document.getElementById('lcdBpm').textContent='090';
 })();
 </script>
 <?php khb_footer(); ?>
