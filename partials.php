@@ -2,7 +2,7 @@
 // Shared header/footer chrome for all public pages.
 require_once __DIR__ . '/lib.php';
 
-function khb_header($title, $active = '') {
+function khb_header($title, $active = '', $viewport = 'width=device-width,initial-scale=1') {
     $m = current_member();
     $cartCount = count(cart());
     $nav = [
@@ -14,7 +14,7 @@ function khb_header($title, $active = '') {
         'contact.php' => 'Contact',
     ];
     echo '<!DOCTYPE html><html lang="en"><head>';
-    echo '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<meta charset="utf-8"><meta name="viewport" content="' . h($viewport) . '">';
     echo '<title>' . h($title) . ' — ' . SITE_NAME . '</title>';
     echo '<meta name="description" content="KAOS Hot Beatz — original MPC-crafted instrumentals, studio sessions, and exclusive beats by an MPC and Yamaha collector.">';
     $cssv = @filemtime(__DIR__ . '/assets/style.css') ?: time();
@@ -43,7 +43,9 @@ function khb_footer() {
     echo '<div><h4>Shop</h4><a href="/beats.php">Beats</a><a href="/cart.php">Cart</a><a href="/member/account.php">My Purchases</a></div>';
     echo '<div><h4>Studio</h4><a href="/book.php">Book a Session</a><a href="/about.php">The Collection</a><a href="/contact.php">Contact</a></div>';
     echo '<div><h4>Account</h4><a href="/member/login.php">Sign In</a><a href="/member/register.php">Create Account</a><a href="/licensing.php">Licensing</a></div>';
+    echo '<div><h4>Legal</h4><a href="/terms.php">Terms &amp; Conditions</a><a href="/privacy.php">Privacy Policy</a><a href="/licensing.php">Licensing</a></div>';
     echo '</div>';
+    echo '<p class="muted foot-disclaimer">Cover recordings on this site are fan-made productions created for demonstration purposes; rights to the original compositions belong to their respective owners. Beats and instrumentals are original works — no sample or composition is knowingly used without the right to do so. Streaming and stem-mixer tools on this site are provided for preview and educational use. By creating an account or purchasing a license, you agree to our <a href="/terms.php">Terms &amp; Conditions</a> and <a href="/privacy.php">Privacy Policy</a>.</p>';
     echo '<p class="copyright">© ' . date('Y') . ' Omar Huertas LLC. All beats & recordings protected. KAOS HOT BEATZ™.</p>';
     echo '</div></footer>';
     $jsv = @filemtime(__DIR__ . '/assets/main.js') ?: time();

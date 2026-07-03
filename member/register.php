@@ -33,6 +33,7 @@ khb_header('Create Account', '');
     <label>Email</label><input type="email" name="email" required>
     <label>Password</label><input type="password" name="password" minlength="8" required>
     <button class="btn block" style="margin-top:18px">Create account</button>
+    <p class="muted" style="font-size:.78rem;margin-top:10px">By creating an account, you agree to our <a href="/terms.php">Terms &amp; Conditions</a> and <a href="/privacy.php">Privacy Policy</a>.</p>
   </form>
   <p class="muted" style="margin-top:16px">Already have one? <a href="/member/login.php?next=<?= h(urlencode($next)) ?>">Sign in</a></p>
 </div></section>

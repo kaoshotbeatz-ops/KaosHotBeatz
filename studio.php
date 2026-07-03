@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/partials.php';
-khb_header('The Lab — Drum Machine', 'studio.php');
+khb_header('The Lab — Drum Machine', 'studio.php', 'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no');
 $PADS = [
   ['808 KICK','1'],['KICK','2'],['SNARE','3'],['CLAP','4'],
   ['RIM','Q'],['CH HAT','W'],['OH HAT','E'],['HAT','R'],
@@ -15,7 +15,8 @@ $MELODY = [
 ];
 ?>
 <style>
-.lab{max-width:760px;margin:0 auto}
+.lab{max-width:760px;margin:0 auto;touch-action:manipulation}
+.lab button,.lab .pad,.lab .key,.lab input[type=range]{touch-action:manipulation}
 .machine{position:relative;background:linear-gradient(180deg,#26262b,#161619);border:3px solid #000;border-radius:16px;padding:22px;box-shadow:0 20px 40px rgba(0,0,0,.6)}
 .lab-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .lab-top .btn.sm{min-width:74px}
