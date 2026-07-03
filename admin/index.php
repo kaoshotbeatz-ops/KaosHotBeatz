@@ -154,7 +154,13 @@ function tab_link($t,$cur,$label){ $on=$t===$cur?'style="color:var(--amber);bord
     <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
       <div><strong><?= h($b['service_name']) ?></strong> — <?= h($b['date']) ?> at <?= h($b['time']) ?><br>
         <span class="muted"><?= h($b['name']) ?> · <?= h($b['email']) ?> · <?= h($b['phone']) ?></span>
-        <?php if(!empty($b['notes'])): ?><br><span class="muted" style="font-size:.86rem">📝 <?= h($b['notes']) ?></span><?php endif; ?></div>
+        <?php if(!empty($b['notes'])): ?><br><span class="muted" style="font-size:.86rem">📝 <?= h($b['notes']) ?></span><?php endif; ?>
+        <?php if(!empty($b['verify_photo']) || !empty($b['verify_id'])): ?>
+        <div style="margin-top:6px">
+          <?php if(!empty($b['verify_photo'])): ?><a class="tag" href="/admin/verify-view.php?booking=<?= h($b['id']) ?>&which=photo" target="_blank">📷 View photo</a> <?php endif; ?>
+          <?php if(!empty($b['verify_id'])): ?><a class="tag" href="/admin/verify-view.php?booking=<?= h($b['id']) ?>&which=id" target="_blank">🪪 View ID</a><?php endif; ?>
+        </div>
+        <?php endif; ?></div>
       <form method="post" style="display:flex;gap:6px;align-items:center">
         <?= acsrf_field() ?><input type="hidden" name="action" value="booking_status"><input type="hidden" name="id" value="<?= h($b['id']) ?>">
         <select name="status" onchange="this.form.submit()">
@@ -179,7 +185,8 @@ function tab_link($t,$cur,$label){ $on=$t===$cur?'style="color:var(--amber);bord
   <h2>Members</h2>
   <?php if (!$members): ?><p class="muted">No members yet.</p><?php endif; ?>
   <div class="beat-list"><?php foreach ($members as $m): ?>
-    <div class="beat" style="grid-template-columns:1fr auto"><div class="meta"><div class="t"><?= h($m['name']) ?></div><div class="s"><?= h($m['email']) ?></div></div>
+    <div class="beat" style="grid-template-columns:1fr auto"><div class="meta"><div class="t"><?= h($m['name']) ?></div><div class="s"><?= h($m['email']) ?></div>
+      <?php if(!empty($m['bio'])): ?><div class="s muted" style="font-size:.8rem;margin-top:2px"><?= h($m['bio']) ?></div><?php endif; ?></div>
     <span class="muted mono" style="font-size:.8rem"><?= date('M j, Y', $m['ts']) ?></span></div>
   <?php endforeach; ?></div>
 

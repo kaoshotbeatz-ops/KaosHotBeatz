@@ -18,6 +18,23 @@ foreach (khb_load('bookings') as $bk) {
     if (($bk['status'] ?? '') !== 'cancelled') $booked[] = $bk['date'] . ' ' . $bk['time'];
 }
 
+// Accepted upload types for the photo + ID verification
+$UPLOAD_TYPES = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'application/pdf' => 'pdf'];
+$UPLOAD_MAX = 8 * 1024 * 1024; // 8MB
+function khb_save_verification_upload($field, $dir, $basename, $types, $maxSize) {
+    if (empty($_FILES[$field]) || $_FILES[$field]['error'] !== UPLOAD_ERR_OK) return null;
+    $f = $_FILES[$field];
+    if ($f['size'] > $maxSize) return false;
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime = finfo_file($finfo, $f['tmp_name']);
+    finfo_close($finfo);
+    if (!isset($types[$mime])) return false;
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
+    $path = $dir . '/' . $basename . '.' . $types[$mime];
+    if (!move_uploaded_file($f['tmp_name'], $path)) return false;
+    return basename($path);
+}
+
 $err = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_ok()) {
     $name  = trim(strip_tags($_POST['name'] ?? ''));
@@ -32,14 +49,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_ok()) {
     $dt = $valid ? DateTime::createFromFormat('Y-m-d H:i', "$date $time", $TZ) : null;
     if ($valid && (!$dt || $dt < new DateTime('now', $TZ))) $valid = false;
 
+    $hasPhoto = !empty($_FILES['photo']['name']);
+    $hasId    = !empty($_FILES['gov_id']['name']);
+
     if (!$valid)                              $err = 'Pick an open slot and add your name + a valid email.';
     elseif (in_array("$date $time", $booked)) $err = 'That slot was just taken — pick another.';
+    elseif (!$hasPhoto || !$hasId)            $err = 'A photo and a government ID are required to confirm a session.';
     else {
-        $bookings = khb_load('bookings');
         $id = khb_uuid();
+        $uploadDir = __DIR__ . '/data/uploads/ids/' . $id;
+        $photoFile = khb_save_verification_upload('photo', $uploadDir, 'photo', $UPLOAD_TYPES, $UPLOAD_MAX);
+        $idFile    = khb_save_verification_upload('gov_id', $uploadDir, 'id', $UPLOAD_TYPES, $UPLOAD_MAX);
+        if (!$photoFile || !$idFile) { $err = 'Photo/ID upload failed — use a JPG, PNG, WEBP, or PDF under 8MB.'; }
+        else {
+        $bookings = khb_load('bookings');
         $bookings[] = ['id' => $id, 'name' => $name, 'email' => $email, 'phone' => $phone,
             'service' => $svc, 'service_name' => $services[$svc], 'date' => $date, 'time' => $time,
-            'duration' => $DURATION, 'notes' => $notes, 'status' => 'confirmed', 'ts' => time()];
+            'duration' => $DURATION, 'notes' => $notes, 'status' => 'confirmed', 'ts' => time(),
+            'verify_photo' => $photoFile, 'verify_id' => $idFile];
         khb_save('bookings', $bookings);
         $when = $dt->format('l, M j Y \a\t g:i A');
         @mail(SITE_EMAIL, 'New session booked — ' . $when,
@@ -49,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_ok()) {
             "You're booked: {$services[$svc]} on $when.\nAdd it to your calendar: https://kaoshotbeatz.com/book-ics.php?id=$id",
             'From: ' . SITE_EMAIL);
         header('Location: /book.php?confirmed=' . $id); exit;
+        }
     }
 }
 
@@ -120,7 +148,7 @@ $data = [
       <div class="slots" id="slotRow"></div>
     </div>
 
-    <form method="post" id="bookForm" class="card" style="display:none;margin-top:18px">
+    <form method="post" id="bookForm" class="card" style="display:none;margin-top:18px" enctype="multipart/form-data">
       <?= csrf_field() ?>
       <input type="hidden" name="date" id="fDate"><input type="hidden" name="time" id="fTime">
       <p class="ey">Booking: <span id="pick" class="mono" style="color:var(--gold)"></span></p>
@@ -134,6 +162,11 @@ $data = [
       </div>
       <label>Notes (artist, reference tracks, what you're working on)</label>
       <textarea name="notes" rows="3"></textarea>
+      <div class="grid c2" style="margin-top:14px">
+        <div><label>Photo of yourself</label><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required></div>
+        <div><label>Government ID</label><input type="file" name="gov_id" accept="image/jpeg,image/png,image/webp,application/pdf" required></div>
+      </div>
+      <p class="muted" style="font-size:.78rem;margin-top:6px">Required to confirm any in-person session. Used only to verify your identity at check-in and is never shared publicly. JPG, PNG, WEBP, or PDF, up to 8MB each.</p>
       <button class="btn block" style="margin-top:16px">Confirm booking →</button>
     </form>
   </div>

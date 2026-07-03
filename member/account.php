@@ -2,6 +2,15 @@
 require_once __DIR__ . '/../partials.php';
 require_member();
 $member = current_member();
+$saved = false;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_ok() && isset($_POST['save_bio'])) {
+    $bio = trim(strip_tags($_POST['bio'] ?? ''));
+    $members = khb_load('members');
+    foreach ($members as &$m) if ($m['id'] === $member['id']) { $m['bio'] = substr($bio, 0, 600); $member['bio'] = $m['bio']; }
+    unset($m);
+    khb_save('members', $members);
+    $saved = true;
+}
 $orders = array_filter(khb_load('orders'), fn($o) => $o['member'] === $member['id']);
 usort($orders, fn($a, $b) => ($b['ts'] ?? 0) <=> ($a['ts'] ?? 0));
 $bookings = array_filter(khb_load('bookings'), fn($b) => strtolower($b['email']) === strtolower($member['email']));
@@ -15,6 +24,15 @@ khb_header('My Account', '');
       <a class="btn ghost sm" href="/member/logout.php">Sign out</a>
     </div>
     <?php if (!empty($_GET['purchased'])): ?><div class="notice ok">Purchase complete — your downloads are below. 🎉</div><?php endif; ?>
+    <?php if ($saved): ?><div class="notice ok">Profile updated.</div><?php endif; ?>
+
+    <h3>Your profile</h3>
+    <form method="post" class="card" style="margin-bottom:24px">
+      <?= csrf_field() ?><input type="hidden" name="save_bio" value="1">
+      <label>Bio <span class="muted">(artist name, sound, socials — shown on your profile)</span></label>
+      <textarea name="bio" rows="3" maxlength="600"><?= h($member['bio'] ?? '') ?></textarea>
+      <button class="btn sm" style="margin-top:10px">Save bio</button>
+    </form>
 
     <h3>Your beats & downloads</h3>
     <?php if (!$orders): ?>

@@ -7,13 +7,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_ok()) {
     $name = trim(strip_tags($_POST['name'] ?? ''));
     $email = strtolower(filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL));
     $pass = $_POST['password'] ?? '';
+    $bio = trim(strip_tags($_POST['bio'] ?? ''));
     $members = khb_load('members');
     if (!$name || !$email) $err = 'Enter your name and a valid email.';
     elseif (strlen($pass) < 8) $err = 'Password must be at least 8 characters.';
     elseif (array_filter($members, fn($m) => $m['email'] === $email)) $err = 'An account with that email already exists.';
     else {
         $id = khb_uuid();
-        $members[] = ['id' => $id, 'name' => $name, 'email' => $email,
+        $members[] = ['id' => $id, 'name' => $name, 'email' => $email, 'bio' => substr($bio, 0, 600),
             'pass' => password_hash($pass, PASSWORD_DEFAULT), 'ts' => time()];
         khb_save('members', $members);
         session_regenerate_id(true);
@@ -32,6 +33,8 @@ khb_header('Create Account', '');
     <label>Name / artist name</label><input name="name" required>
     <label>Email</label><input type="email" name="email" required>
     <label>Password</label><input type="password" name="password" minlength="8" required>
+    <label>Bio <span class="muted">(artist name, sound, socials — shown on your profile)</span></label>
+    <textarea name="bio" rows="3" maxlength="600"></textarea>
     <button class="btn block" style="margin-top:18px">Create account</button>
     <p class="muted" style="font-size:.78rem;margin-top:10px">By creating an account, you agree to our <a href="/terms.php">Terms &amp; Conditions</a> and <a href="/privacy.php">Privacy Policy</a>.</p>
   </form>
