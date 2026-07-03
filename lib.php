@@ -29,7 +29,7 @@ if (!defined('INSTAGRAM_URL'))  define('INSTAGRAM_URL', 'https://instagram.com/k
 if (!defined('SOUNDCLOUD_URL')) define('SOUNDCLOUD_URL', 'https://soundcloud.com/kaoshotbeatz');
 if (!defined('YOUTUBE_URL'))    define('YOUTUBE_URL', 'https://www.youtube.com/@OmarHuertas');
 if (!defined('BEATSTARS_URL'))  define('BEATSTARS_URL', 'https://www.beatstars.com/kaoshotbeatz');
-if (!defined('STAT_PLAYS'))     define('STAT_PLAYS', '36K+');
+if (!defined('STAT_PLAYS'))     define('STAT_PLAYS', '500K+');
 if (!defined('STAT_SONGS'))     define('STAT_SONGS', '25+');
 
 // Featured Suno tracks (shown when admin hasn't added its own via the Music tab).

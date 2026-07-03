@@ -13,7 +13,7 @@ define('INSTAGRAM_URL',  'https://instagram.com/kaosbeatz');
 define('SOUNDCLOUD_URL', 'https://soundcloud.com/kaoshotbeatz');
 define('YOUTUBE_URL',    'https://www.youtube.com/@OmarHuertas');
 define('BEATSTARS_URL',  'https://www.beatstars.com/kaoshotbeatz');
-define('STAT_PLAYS',     '36K+');   // update as it grows
+define('STAT_PLAYS',     '500K+');   // update as it grows
 define('STAT_SONGS',     '25+');
 
 // Admin panel password (used at /admin/)
