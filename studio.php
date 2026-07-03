@@ -208,6 +208,25 @@ $MELODY = [
       </div>
     </div>
 
+    <div class="machine xl-skin" style="margin-top:26px">
+      <h3 style="margin:0 0 6px">3-Band EQ</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:16px">Shapes the whole mix — low/mid/high, right before the master glue compressor. Watch the digits move as you turn the knobs.</p>
+      <div class="eq-rack">
+        <div class="eq-lcd">
+          <div class="xl-lcd-scan"></div>
+          <div class="eq-lcd-band"><label>LOW</label><b id="eqLowV">0dB</b></div>
+          <div class="eq-lcd-band"><label>MID</label><b id="eqMidV">0dB</b></div>
+          <div class="eq-lcd-band"><label>HIGH</label><b id="eqHighV">0dB</b></div>
+        </div>
+        <button class="btn ghost sm comp-on off" id="eqOn" data-target="eq" style="align-self:center">OFF</button>
+      </div>
+      <div class="eq-strips">
+        <div class="eq-band-ctl"><label>LOW · 120Hz</label><div class="pitch-track"><input type="range" id="eqLow" min="-12" max="12" value="0" step="0.5" orient="vertical"></div></div>
+        <div class="eq-band-ctl"><label>MID · 1kHz</label><div class="pitch-track"><input type="range" id="eqMid" min="-12" max="12" value="0" step="0.5" orient="vertical"></div></div>
+        <div class="eq-band-ctl"><label>HIGH · 8kHz</label><div class="pitch-track"><input type="range" id="eqHigh" min="-12" max="12" value="0" step="0.5" orient="vertical"></div></div>
+      </div>
+    </div>
+
     <div class="machine motif-skin" style="margin-top:26px">
       <h3 style="margin:0 0 6px">Play the Keys</h3>
       <div class="key-top">
@@ -262,6 +281,7 @@ $MELODY = [
 var AC=null, master=null, ready=false, curBank=0;
 var drumGain=null, melodyGain=null, keysGain=null, ttGain=null;
 var drumComp=null, drumMakeup=null, masterComp=null, masterMakeup=null;
+var eqLow=null, eqMid=null, eqHigh=null, eqOn=false;
 var keysRevSend=null, keysConv=null, keysRevWet=null;
 var keysDlySend=null, keysDelay=null, keysDlyFb=null, keysDlyWet=null;
 var masterAn=null, drumAn=null, melodyAn=null, keysAn=null, ttAn=null;
@@ -294,10 +314,16 @@ function ctx(){
     keysGain.connect(keysDlySend); keysDlySend.connect(keysDelay); keysDelay.connect(keysDlyFb); keysDlyFb.connect(keysDelay);
     keysDelay.connect(keysDlyWet); keysDlyWet.connect(master);
 
+    // 3-band EQ, sitting right before the master glue compressor
+    eqLow=AC.createBiquadFilter(); eqLow.type='lowshelf'; eqLow.frequency.value=120; eqLow.gain.value=0;
+    eqMid=AC.createBiquadFilter(); eqMid.type='peaking'; eqMid.frequency.value=1000; eqMid.Q.value=0.9; eqMid.gain.value=0;
+    eqHigh=AC.createBiquadFilter(); eqHigh.type='highshelf'; eqHigh.frequency.value=8000; eqHigh.gain.value=0;
+    master.connect(eqLow); eqLow.connect(eqMid); eqMid.connect(eqHigh);
+
     // master bus (SSL-style glue) compressor
     masterComp=AC.createDynamicsCompressor(); masterComp.threshold.value=-12; masterComp.knee.value=6; masterComp.ratio.value=3; masterComp.attack.value=0.01; masterComp.release.value=0.3;
     masterMakeup=AC.createGain(); masterMakeup.gain.value=1.15;
-    master.connect(masterComp); masterComp.connect(masterMakeup); masterMakeup.connect(AC.destination);
+    eqHigh.connect(masterComp); masterComp.connect(masterMakeup); masterMakeup.connect(AC.destination);
 
     drumAn=mkAnalyser(AC,drumMakeup); melodyAn=mkAnalyser(AC,melodyGain); keysAn=mkAnalyser(AC,keysGain); ttAn=mkAnalyser(AC,ttGain);
     masterAn=mkAnalyser(AC,masterMakeup);
@@ -819,6 +845,22 @@ function updDly(){
 ['fx-dly-time','fx-dly-fb','fx-dly-mix'].forEach(function(id){ document.getElementById(id).addEventListener('input',updDly); });
 fxRevBtn.addEventListener('click',function(){ fxRevBtn.classList.toggle('off'); fxRevBtn.textContent=fxRevBtn.classList.contains('off')?'OFF':'ON'; updRev(); });
 fxDlyBtn.addEventListener('click',function(){ fxDlyBtn.classList.toggle('off'); fxDlyBtn.textContent=fxDlyBtn.classList.contains('off')?'OFF':'ON'; updDly(); });
+
+// ---- 3-band EQ (master bus, right before the glue compressor) ----
+var eqOnBtn=document.getElementById('eqOn');
+function updEq(){
+  ctx();
+  var lo=+document.getElementById('eqLow').value, mid=+document.getElementById('eqMid').value, hi=+document.getElementById('eqHigh').value;
+  document.getElementById('eqLowV').textContent=(lo>0?'+':'')+lo+'dB';
+  document.getElementById('eqMidV').textContent=(mid>0?'+':'')+mid+'dB';
+  document.getElementById('eqHighV').textContent=(hi>0?'+':'')+hi+'dB';
+  var on=!eqOnBtn.classList.contains('off');
+  eqLow.gain.value = on ? lo : 0;
+  eqMid.gain.value = on ? mid : 0;
+  eqHigh.gain.value = on ? hi : 0;
+}
+['eqLow','eqMid','eqHigh'].forEach(function(id){ document.getElementById(id).addEventListener('input',updEq); });
+eqOnBtn.addEventListener('click',function(){ eqOnBtn.classList.toggle('off'); eqOnBtn.textContent=eqOnBtn.classList.contains('off')?'OFF':'ON'; updEq(); });
 })();
 </script>
 <?php khb_footer(); ?>
