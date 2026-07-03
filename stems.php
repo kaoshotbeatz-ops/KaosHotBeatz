@@ -13,6 +13,7 @@ $STEM_ORDER = [
   'keyboard'      => ['KEYS', '#7fb0ff'],
   'strings'       => ['STRINGS', '#b98cff'],
   'brass'         => ['BRASS', '#ffbf00'],
+  'woodwinds'     => ['WOODWINDS', '#5fd4d4'],
   'synth'         => ['SYNTH', '#e11d1d'],
   'vocals'        => ['LEAD VOCAL', '#ff6fa8'],
   'backingvocals' => ['BACKING VOX', '#ff9a4d'],
